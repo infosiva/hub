@@ -20,7 +20,6 @@ interface MarketingProduct {
   proPrice: string;
   subreddits: string[];
   phTagline: string;
-  userCount: string;
 }
 
 const PRODUCTS: MarketingProduct[] = [
@@ -39,7 +38,6 @@ const PRODUCTS: MarketingProduct[] = [
     proPrice: "$7/month",
     subreddits: ["r/languagelearning", "r/learnspanish", "r/learnfrench", "r/artificial", "r/apps"],
     phTagline: "Practice real conversations in 50+ languages — AI that talks back",
-    userCount: "2,400+",
   },
   {
     id: "resumevault",
@@ -56,7 +54,6 @@ const PRODUCTS: MarketingProduct[] = [
     proPrice: "$9/month",
     subreddits: ["r/cscareerquestions", "r/jobs", "r/resumes", "r/artificial", "r/careerguidance"],
     phTagline: "ATS-proof your resume with AI — free to try, no signup needed",
-    userCount: "3,100+",
   },
   {
     id: "kwizzo",
@@ -73,7 +70,6 @@ const PRODUCTS: MarketingProduct[] = [
     proPrice: "$8/month",
     subreddits: ["r/Parenting", "r/trivia", "r/boardgames", "r/Teachers", "r/artificial"],
     phTagline: "Infinite AI quiz game for families — any topic, any age, multiplayer",
-    userCount: "1,800+",
   },
   {
     id: "tutiq",
@@ -90,7 +86,6 @@ const PRODUCTS: MarketingProduct[] = [
     proPrice: "$8/month",
     subreddits: ["r/Parenting", "r/homeschool", "r/learnmath", "r/Teachers", "r/artificial"],
     phTagline: "Free AI tutor that explains anything to anyone — no booking, no waiting",
-    userCount: "1,800+",
   },
   {
     id: "draftcal",
@@ -107,7 +102,6 @@ const PRODUCTS: MarketingProduct[] = [
     proPrice: "$12/month",
     subreddits: ["r/socialmedia", "r/entrepreneur", "r/smallbusiness", "r/marketing", "r/artificial"],
     phTagline: "30-day social media calendar in 2 minutes — AI writes every post",
-    userCount: "900+",
   },
 ];
 
@@ -154,7 +148,7 @@ Built with: Next.js, Groq, Gemini, Claude (fallback chain — free models first)
 **Maker comment:**
 Hi PH! 👋 I'm Siva, and I built ${p.name} because ${p.painPoint.toLowerCase()}
 
-I've been building AI tools for the past few months and ${p.name} is one I'm most excited about. ${p.userCount} people have already tried it.
+I've been building AI tools for the past few months and ${p.name} is one I'm most excited about.
 
 Would love your feedback — what features would make this a daily habit for you?
 
@@ -180,7 +174,7 @@ ${p.keyFeatures.map((f, i) => `${i + 1}. ${f}`).join("\n")}
 
 Unlike other tools in this space, ${p.name} uses a multi-model AI fallback chain (Groq → Gemini → Claude) to keep costs low and availability high — meaning the free plan is genuinely free, not a crippled demo.
 
-${p.userCount} users have already built with ${p.name}. Start free at ${p.url} — no credit card required.
+Start free at ${p.url} — no credit card required.
 
 **Tags:** AI, ${p.category}, free, ${p.keyFeatures[0].split(" ").slice(0, 3).join("-").toLowerCase()}
 **Pricing:** Freemium (${p.freeLimit} free, Pro ${p.proPrice})`;
@@ -200,7 +194,7 @@ ${p.keyFeatures.slice(0, 3).map(f => `→ ${f}`).join("\n")}
 
 Built with Next.js + AI fallback chain (Groq → Gemini → Claude).
 
-${p.userCount} people already using it. What would you add? 👇
+What would you add? 👇
 
 #buildinpublic #AI #${p.id}`;
 }
@@ -330,7 +324,7 @@ export default function MarketingPage() {
                 <div className="flex items-center gap-3 mt-2">
                   <span className="text-white/25 text-xs">{selectedProduct.url}</span>
                   <span className="text-white/25 text-xs">·</span>
-                  <span className="text-white/25 text-xs">{selectedProduct.userCount} users</span>
+                  <span className="text-white/25 text-xs">Free: {selectedProduct.freeLimit}</span>
                   <span className="text-white/25 text-xs">·</span>
                   <span className="text-white/25 text-xs">Pro: {selectedProduct.proPrice}</span>
                 </div>
