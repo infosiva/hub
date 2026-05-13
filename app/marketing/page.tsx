@@ -318,30 +318,6 @@ export default function MarketingPage() {
           {/* Right: copy area */}
           <div className="space-y-6">
 
-            {/* Product header */}
-            <div className="glass-card rounded-2xl p-5 flex items-center gap-4">
-              <span className="text-4xl">{selectedProduct.emoji}</span>
-              <div className="flex-1">
-                <div className={`text-xl font-bold ${selectedProduct.color}`}>{selectedProduct.name}</div>
-                <div className="text-white/50 text-sm">{selectedProduct.tagline}</div>
-                <div className="flex items-center gap-3 mt-2">
-                  <span className="text-white/25 text-xs">{selectedProduct.url}</span>
-                  <span className="text-white/25 text-xs">·</span>
-                  <span className="text-white/25 text-xs">Free: {selectedProduct.freeLimit}</span>
-                  <span className="text-white/25 text-xs">·</span>
-                  <span className="text-white/25 text-xs">Pro: {selectedProduct.proPrice}</span>
-                </div>
-              </div>
-              <a
-                href={selectedProduct.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-4 py-2 text-xs font-semibold rounded-lg bg-white/[0.06] hover:bg-white/10 border border-white/10 transition-colors"
-              >
-                Open Site ↗
-              </a>
-            </div>
-
             {/* Live Preview + Screenshot */}
             <div className="glass-card rounded-2xl overflow-hidden">
               <div className="px-4 py-3 border-b border-white/[0.06] flex items-center gap-3">
