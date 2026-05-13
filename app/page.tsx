@@ -60,6 +60,17 @@ export default function HubPage() {
     <div className="relative min-h-screen text-white">
       <div className="mesh-bg" />
 
+      {/* Admin nav */}
+      <div className="relative z-10 flex justify-end px-6 pt-4">
+        <a
+          href="/marketing"
+          className="inline-flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full border border-white/10 text-white/40 hover:text-white/70 hover:border-white/20 transition-all"
+          style={{ background: "rgba(255,255,255,0.04)" }}
+        >
+          📣 Marketing Dashboard
+        </a>
+      </div>
+
       <div className="relative z-10 max-w-6xl mx-auto px-6 py-16">
 
         {/* Header */}
