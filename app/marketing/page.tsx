@@ -246,9 +246,11 @@ export default function MarketingPage() {
   const copy = getCopy();
   const [screenshotLoading, setScreenshotLoading] = useState(false);
   const [screenshotReady, setScreenshotReady] = useState(false);
-  // ScreenshotOne free tier — real headless Chrome, no auth needed for public sites
-  const screenshotUrl = `https://api.screenshotone.com/take?url=${encodeURIComponent(selectedProduct.url)}&viewport_width=1280&viewport_height=800&format=jpg&image_quality=85&full_page=false&delay=2&cache=true`;
-  const microlinkUrl = `https://api.microlink.io/?url=${encodeURIComponent(selectedProduct.url)}&screenshot=true&meta=false&embed=screenshot.url&type=jpeg&viewport.width=1280&viewport.height=800`;
+  const [previewMode, setPreviewMode] = useState<'mobile' | 'desktop'>('mobile');
+
+  const microlinkUrl = previewMode === 'mobile'
+    ? `https://api.microlink.io/?url=${encodeURIComponent(selectedProduct.url)}&screenshot=true&meta=false&embed=screenshot.url&type=jpeg&viewport.width=390&viewport.height=844&viewport.isMobile=true&viewport.hasTouch=true`
+    : `https://api.microlink.io/?url=${encodeURIComponent(selectedProduct.url)}&screenshot=true&meta=false&embed=screenshot.url&type=jpeg&viewport.width=1280&viewport.height=800`;
 
   return (
     <div className="relative min-h-screen text-white">
@@ -320,18 +322,32 @@ export default function MarketingPage() {
 
             {/* Live Preview + Screenshot */}
             <div className="glass-card rounded-2xl overflow-hidden">
-              <div className="px-4 py-3 border-b border-white/[0.06] flex items-center gap-3">
+              <div className="px-4 py-3 border-b border-white/[0.06] flex items-center gap-3 flex-wrap">
                 <span className="text-white/40 text-xs font-semibold uppercase tracking-widest">Live Preview</span>
-                <span className="text-white/20 text-xs">— scroll inside to explore</span>
+                {/* Mobile / Desktop toggle */}
+                <div className="flex rounded-lg overflow-hidden border border-white/10 text-xs font-semibold">
+                  <button
+                    onClick={() => setPreviewMode('mobile')}
+                    className={`px-3 py-1.5 transition-colors flex items-center gap-1 ${previewMode === 'mobile' ? 'bg-white/20 text-white' : 'bg-white/[0.04] text-white/40 hover:text-white/60'}`}
+                  >
+                    📱 Mobile
+                  </button>
+                  <button
+                    onClick={() => setPreviewMode('desktop')}
+                    className={`px-3 py-1.5 transition-colors flex items-center gap-1 border-l border-white/10 ${previewMode === 'desktop' ? 'bg-white/20 text-white' : 'bg-white/[0.04] text-white/40 hover:text-white/60'}`}
+                  >
+                    🖥 Desktop
+                  </button>
+                </div>
                 <div className="ml-auto flex items-center gap-2">
                   <a
                     href={microlinkUrl}
-                    download={`${selectedProduct.id}-screenshot.jpg`}
+                    download={`${selectedProduct.id}-${previewMode}-screenshot.jpg`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-white/[0.08] hover:bg-white/15 border border-white/10 transition-colors"
                   >
-                    📸 Get Screenshot
+                    📸 Get {previewMode === 'mobile' ? 'Mobile' : 'Desktop'} Screenshot
                   </a>
                   <a
                     href={selectedProduct.url}
@@ -344,19 +360,40 @@ export default function MarketingPage() {
                 </div>
               </div>
               {/* iframe live preview */}
-              <div className="relative w-full bg-black/60" style={{ height: "420px" }}>
-                <iframe
-                  key={selectedProduct.id}
-                  src={selectedProduct.url}
-                  title={`${selectedProduct.name} live preview`}
-                  className="w-full h-full border-0"
-                  style={{ transform: "scale(0.75)", transformOrigin: "top left", width: "133%", height: "133%" }}
-                  loading="lazy"
-                />
-                <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
-              </div>
+              {previewMode === 'mobile' ? (
+                <div className="relative w-full bg-black/60 flex items-start justify-center py-6" style={{ height: "520px" }}>
+                  {/* Phone shell */}
+                  <div className="relative flex-shrink-0" style={{ width: "280px" }}>
+                    <div className="absolute inset-0 rounded-[2.5rem] border-[8px] border-white/20 bg-black/80 shadow-2xl z-10 pointer-events-none" />
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-5 bg-black/80 rounded-b-xl z-20 pointer-events-none" />
+                    <div className="overflow-hidden rounded-[2rem]" style={{ height: "490px" }}>
+                      <iframe
+                        key={`${selectedProduct.id}-mobile`}
+                        src={selectedProduct.url}
+                        title={`${selectedProduct.name} mobile preview`}
+                        className="border-0"
+                        style={{ width: "390px", height: "844px", transform: "scale(0.718)", transformOrigin: "top left" }}
+                        loading="lazy"
+                      />
+                    </div>
+                  </div>
+                  <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
+                </div>
+              ) : (
+                <div className="relative w-full bg-black/60" style={{ height: "420px" }}>
+                  <iframe
+                    key={`${selectedProduct.id}-desktop`}
+                    src={selectedProduct.url}
+                    title={`${selectedProduct.name} desktop preview`}
+                    className="w-full h-full border-0"
+                    style={{ transform: "scale(0.75)", transformOrigin: "top left", width: "133%", height: "133%" }}
+                    loading="lazy"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
+                </div>
+              )}
               <div className="px-4 py-2 border-t border-white/[0.04] flex items-center gap-2">
-                <span className="text-white/20 text-xs">💡 Click <strong className="text-white/40">Get Screenshot</strong> → right-click the image → Save As — use for Reddit, PH, directories</span>
+                <span className="text-white/20 text-xs">💡 Click <strong className="text-white/40">Get {previewMode === 'mobile' ? 'Mobile' : 'Desktop'} Screenshot</strong> → right-click → Save As — use for Reddit, PH, directories</span>
               </div>
             </div>
 
