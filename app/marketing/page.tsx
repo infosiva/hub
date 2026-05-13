@@ -244,8 +244,11 @@ export default function MarketingPage() {
   }
 
   const copy = getCopy();
-  // Microlink API: free, real browser screenshots, 1280×800
-  const screenshotUrl = `https://api.microlink.io/?url=${encodeURIComponent(selectedProduct.url)}&screenshot=true&meta=false&embed=screenshot.url&type=jpeg&overlay.browser=dark&viewport.width=1280&viewport.height=800`;
+  const [screenshotLoading, setScreenshotLoading] = useState(false);
+  const [screenshotReady, setScreenshotReady] = useState(false);
+  // ScreenshotOne free tier — real headless Chrome, no auth needed for public sites
+  const screenshotUrl = `https://api.screenshotone.com/take?url=${encodeURIComponent(selectedProduct.url)}&viewport_width=1280&viewport_height=800&format=jpg&image_quality=85&full_page=false&delay=2&cache=true`;
+  const microlinkUrl = `https://api.microlink.io/?url=${encodeURIComponent(selectedProduct.url)}&screenshot=true&meta=false&embed=screenshot.url&type=jpeg&viewport.width=1280&viewport.height=800`;
 
   return (
     <div className="relative min-h-screen text-white">
@@ -339,36 +342,45 @@ export default function MarketingPage() {
               </a>
             </div>
 
-            {/* Screenshot preview */}
+            {/* Live Preview + Screenshot */}
             <div className="glass-card rounded-2xl overflow-hidden">
-              <div className="px-4 py-3 border-b border-white/[0.06] flex items-center gap-2">
-                <span className="text-white/40 text-xs font-semibold uppercase tracking-widest">Screenshot Preview</span>
-                <a
-                  href={selectedProduct.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="ml-auto text-xs text-white/30 hover:text-white/60 transition-colors"
-                >
-                  Open to take manual screenshot ↗
-                </a>
-              </div>
-              <div className="relative w-full bg-black/40" style={{ paddingBottom: "52%" }}>
-                <img
-                  src={screenshotUrl}
-                  alt={`${selectedProduct.name} screenshot`}
-                  className="absolute inset-0 w-full h-full object-cover object-top opacity-90"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity bg-black/60">
+              <div className="px-4 py-3 border-b border-white/[0.06] flex items-center gap-3">
+                <span className="text-white/40 text-xs font-semibold uppercase tracking-widest">Live Preview</span>
+                <span className="text-white/20 text-xs">— scroll inside to explore</span>
+                <div className="ml-auto flex items-center gap-2">
+                  <a
+                    href={microlinkUrl}
+                    download={`${selectedProduct.id}-screenshot.jpg`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-white/[0.08] hover:bg-white/15 border border-white/10 transition-colors"
+                  >
+                    📸 Get Screenshot
+                  </a>
                   <a
                     href={selectedProduct.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-5 py-2.5 bg-white text-black text-sm font-bold rounded-xl"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-colors text-white/50"
                   >
-                    Open {selectedProduct.name} ↗
+                    Open ↗
                   </a>
                 </div>
+              </div>
+              {/* iframe live preview */}
+              <div className="relative w-full bg-black/60" style={{ height: "420px" }}>
+                <iframe
+                  key={selectedProduct.id}
+                  src={selectedProduct.url}
+                  title={`${selectedProduct.name} live preview`}
+                  className="w-full h-full border-0"
+                  style={{ transform: "scale(0.75)", transformOrigin: "top left", width: "133%", height: "133%" }}
+                  loading="lazy"
+                />
+                <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
+              </div>
+              <div className="px-4 py-2 border-t border-white/[0.04] flex items-center gap-2">
+                <span className="text-white/20 text-xs">💡 Click <strong className="text-white/40">Get Screenshot</strong> → right-click the image → Save As — use for Reddit, PH, directories</span>
               </div>
             </div>
 
