@@ -5,13 +5,24 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Siva's AI Products — All Tools in One Place",
-  description: "A collection of 20+ AI-powered products built by Siva — tutors, quizzes, travel planners, finance tools, resume builders, and more.",
+  title: "Ops Dashboard",
+  description: "Private ops dashboard",
+  metadataBase: new URL("https://ai-products-hub.vercel.app"),
+  robots: "noindex, nofollow",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full">
+      <head>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "AI Products Hub",
+          "url": "https://ai-products-hub.vercel.app",
+          "description": "A collection of 20+ AI-powered products"
+        })}} />
+      </head>
       <body className={`${inter.className} min-h-full flex flex-col`}>{children}</body>
     </html>
   );

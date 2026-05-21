@@ -1,137 +1,218 @@
-type Category = "Education" | "Finance" | "Travel" | "Developer" | "Career" | "Social" | "News" | "Gaming" | "Compliance" | "Language";
+import { Suspense } from "react";
+import { SITES, CATEGORIES, type Site, type SiteStatus } from "@/lib/sites";
 
-interface Product {
-  name: string;
-  tagline: string;
-  url: string;
-  emoji: string;
-  category: Category;
-  color: string;
+// --- server-side status fetch (fresh every request) ---
+async function fetchStatus(): Promise<Record<string, { status: SiteStatus; latency: number; statusCode: number }>> {
+  try {
+    const base = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "http://localhost:3000";
+    const res = await fetch(`${base}/api/status`, { cache: "no-store" });
+    if (!res.ok) return {};
+    const data = await res.json();
+    const map: Record<string, { status: SiteStatus; latency: number; statusCode: number }> = {};
+    for (const s of data.sites ?? []) {
+      map[s.id] = { status: s.status, latency: s.latency, statusCode: s.statusCode };
+    }
+    return map;
+  } catch {
+    return {};
+  }
 }
 
-const PRODUCTS: Product[] = [
-  // Education
-  { name: "Tutiq",        tagline: "AI personal tutor — any subject, any age",           url: "https://tutiq.app",            emoji: "📖", category: "Education",  color: "text-emerald-400" },
-  { name: "Kwizzo",       tagline: "Family quiz game powered by AI",                     url: "https://kwizzo.app",           emoji: "🎯", category: "Education",  color: "text-violet-400" },
-  { name: "QuizBites",    tagline: "Live classroom quizzes for teachers & students",     url: "https://quizbites.app",        emoji: "⚡", category: "Education",  color: "text-blue-400" },
-  { name: "QuizBytes",    tagline: "Daily quiz challenges & trivia",                     url: "https://quizbytes.dev",        emoji: "🧠", category: "Education",  color: "text-indigo-400" },
-  // Language
-  { name: "SpeakIQ",      tagline: "AI language learning coach",                        url: "https://speakiq.app",          emoji: "🗣️", category: "Language",   color: "text-pink-400" },
-  // Finance
-  { name: "TrackWealth",  tagline: "AI investment tracker & portfolio insights",         url: "https://trackwealth.app",      emoji: "📈", category: "Finance",    color: "text-green-400" },
-  // Travel
-  { name: "RoamPlan",     tagline: "AI travel planner — itineraries in seconds",        url: "https://roamplan.app",         emoji: "🌍", category: "Travel",     color: "text-orange-400" },
-  { name: "FlightBrain",  tagline: "Live flight tracker with AI insights",              url: "https://flightbrain.app",      emoji: "✈️", category: "Travel",     color: "text-sky-400" },
-  // Career
-  { name: "ResumeVault",  tagline: "AI resume builder — land your next job",            url: "https://resumevault.app",      emoji: "📄", category: "Career",     color: "text-amber-400" },
-  { name: "AI Jobs",      tagline: "AI-powered job portal for tech roles",              url: "https://www.aijobsportal.app", emoji: "💼", category: "Career",     color: "text-lime-400" },
-  // Social
-  { name: "DraftCal",     tagline: "AI social media calendar & content planner",        url: "https://draftcal.app",         emoji: "📅", category: "Social",     color: "text-fuchsia-400" },
-  // Compliance
-  { name: "ComplyScan",   tagline: "AI compliance scanner for websites & policies",     url: "https://complyscan.app",       emoji: "🛡️", category: "Compliance", color: "text-red-400" },
-  // Developer
-  { name: "AgentLogs",    tagline: "Observability & tracing for AI agents",             url: "https://agentlogs.app",        emoji: "🔍", category: "Developer",  color: "text-cyan-400" },
-  { name: "ClawdBot",     tagline: "AI chatbot builder platform",                       url: "https://clawdbotai.tech",      emoji: "🤖", category: "Developer",  color: "text-purple-400" },
-  // Gaming
-  { name: "ArcadeForge",  tagline: "AI game builder — create browser games with prompts", url: "https://arcadeforge.app",   emoji: "🕹️", category: "Gaming",     color: "text-yellow-400" },
-  // News
-  { name: "NammaTamil",   tagline: "Tamil news, cricket & culture hub",                url: "https://nammatamil.live",      emoji: "🎙️", category: "News",       color: "text-rose-400" },
-  { name: "WorldTrends",  tagline: "Real-time global trend tracker",                   url: "https://worldtrends.today",    emoji: "🌐", category: "News",       color: "text-teal-400" },
-  { name: "QuickTech",    tagline: "AI-powered tech news & summaries",                 url: "https://quicktechai.app",      emoji: "⚙️", category: "News",       color: "text-slate-400" },
-];
+async function fetchAnalytics(): Promise<Record<string, { visitors: number; pageviews: number }>> {
+  try {
+    const base = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "http://localhost:3000";
+    const res = await fetch(`${base}/api/analytics`, { next: { revalidate: 3600 } });
+    if (!res.ok) return {};
+    const data = await res.json();
+    const map: Record<string, { visitors: number; pageviews: number }> = {};
+    for (const s of data.sites ?? []) {
+      map[s.id] = { visitors: s.visitors, pageviews: s.pageviews };
+    }
+    return map;
+  } catch {
+    return {};
+  }
+}
 
-const CATEGORY_COLORS: Record<Category, string> = {
-  Education:   "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-  Finance:     "bg-green-500/10 text-green-400 border-green-500/20",
-  Travel:      "bg-orange-500/10 text-orange-400 border-orange-500/20",
-  Developer:   "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",
-  Career:      "bg-amber-500/10 text-amber-400 border-amber-500/20",
-  Social:      "bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/20",
-  News:        "bg-rose-500/10 text-rose-400 border-rose-500/20",
-  Gaming:      "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
-  Compliance:  "bg-red-500/10 text-red-400 border-red-500/20",
-  Language:    "bg-pink-500/10 text-pink-400 border-pink-500/20",
-};
+// ---- components ----
 
-const CATEGORIES: Category[] = ["Education", "Language", "Finance", "Travel", "Career", "Social", "Compliance", "Developer", "Gaming", "News"];
-
-export default function HubPage() {
+function StatusDot({ status }: { status: SiteStatus }) {
+  const color =
+    status === "up" ? "bg-emerald-400" : status === "down" ? "bg-red-500" : "bg-zinc-500";
+  const pulse = status === "up" ? "animate-pulse" : "";
   return (
-    <div className="relative min-h-screen text-white">
-      <div className="mesh-bg" />
+    <span className="relative flex h-2 w-2">
+      {status === "up" && (
+        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
+      )}
+      <span className={`relative inline-flex rounded-full h-2 w-2 ${color}`} />
+    </span>
+  );
+}
 
-      {/* Admin nav */}
-      <div className="relative z-10 flex justify-end px-6 pt-4">
+function PriorityBadge({ priority }: { priority: "high" | "medium" | "low" }) {
+  const styles = {
+    high: "bg-red-500/15 text-red-400 border-red-500/20",
+    medium: "bg-amber-500/15 text-amber-400 border-amber-500/20",
+    low: "bg-zinc-500/15 text-zinc-400 border-zinc-500/20",
+  };
+  return (
+    <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded border ${styles[priority]}`}>
+      {priority}
+    </span>
+  );
+}
+
+function SiteCard({
+  site,
+  statusInfo,
+  analytics,
+}: {
+  site: Site;
+  statusInfo: { status: SiteStatus; latency: number; statusCode: number };
+  analytics: { visitors: number; pageviews: number };
+}) {
+  const { status, latency } = statusInfo;
+  const highTips = site.tips.filter((t) => t.priority === "high");
+  const medTips = site.tips.filter((t) => t.priority === "medium");
+
+  return (
+    <div className="flex flex-col gap-3 rounded-xl border border-white/8 bg-white/[0.03] p-4 hover:bg-white/[0.05] transition-colors">
+      {/* header */}
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="text-xl shrink-0">{site.emoji}</span>
+          <div className="min-w-0">
+            <a
+              href={site.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white font-semibold text-sm hover:text-violet-300 transition-colors truncate block"
+            >
+              {site.name}
+            </a>
+            <span className="text-zinc-500 text-xs truncate block">{site.url.replace("https://", "")}</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <StatusDot status={status} />
+          <span
+            className={`text-xs font-medium ${
+              status === "up" ? "text-emerald-400" : status === "down" ? "text-red-400" : "text-zinc-400"
+            }`}
+          >
+            {status === "up" ? `${latency}ms` : status}
+          </span>
+        </div>
+      </div>
+
+      {/* stats */}
+      <div className="grid grid-cols-2 gap-2">
+        <div className="rounded-lg bg-white/[0.03] border border-white/5 px-3 py-2">
+          <p className="text-zinc-500 text-[10px] uppercase tracking-wider">Visitors 7d</p>
+          <p className="text-white font-bold text-base mt-0.5">
+            {analytics.visitors > 0 ? analytics.visitors.toLocaleString() : "—"}
+          </p>
+        </div>
+        <div className="rounded-lg bg-white/[0.03] border border-white/5 px-3 py-2">
+          <p className="text-zinc-500 text-[10px] uppercase tracking-wider">Pageviews 7d</p>
+          <p className="text-white font-bold text-base mt-0.5">
+            {analytics.pageviews > 0 ? analytics.pageviews.toLocaleString() : "—"}
+          </p>
+        </div>
+      </div>
+
+      {/* improvement tips */}
+      {site.tips.length > 0 && (
+        <div className="flex flex-col gap-1.5">
+          <p className="text-zinc-500 text-[10px] uppercase tracking-wider">Improve</p>
+          {[...highTips, ...medTips].map((tip, i) => (
+            <div key={i} className="flex items-start gap-2">
+              <PriorityBadge priority={tip.priority} />
+              <span className="text-zinc-300 text-xs leading-relaxed">{tip.label}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---- summary bar ----
+function SummaryBar({
+  statusMap,
+  analyticsMap,
+}: {
+  statusMap: Record<string, { status: SiteStatus; latency: number; statusCode: number }>;
+  analyticsMap: Record<string, { visitors: number; pageviews: number }>;
+}) {
+  const total = SITES.length;
+  const up = SITES.filter((s) => statusMap[s.id]?.status === "up").length;
+  const down = SITES.filter((s) => statusMap[s.id]?.status === "down").length;
+  const totalVisitors = Object.values(analyticsMap).reduce((sum, a) => sum + a.visitors, 0);
+  const totalPageviews = Object.values(analyticsMap).reduce((sum, a) => sum + a.pageviews, 0);
+
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+      {[
+        { label: "Sites", value: `${total}` },
+        { label: "Up", value: `${up}`, accent: "text-emerald-400" },
+        { label: "Down", value: down > 0 ? `${down}` : "0", accent: down > 0 ? "text-red-400" : "text-zinc-400" },
+        { label: "Total Visitors 7d", value: totalVisitors > 0 ? totalVisitors.toLocaleString() : "—" },
+      ].map((stat) => (
+        <div key={stat.label} className="rounded-xl border border-white/8 bg-white/[0.03] px-4 py-3">
+          <p className="text-zinc-500 text-xs uppercase tracking-wider">{stat.label}</p>
+          <p className={`font-bold text-2xl mt-1 ${stat.accent ?? "text-white"}`}>{stat.value}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ---- page ----
+export default async function DashboardPage() {
+  const [statusMap, analyticsMap] = await Promise.all([fetchStatus(), fetchAnalytics()]);
+
+  return (
+    <main className="min-h-screen bg-[#07060f] px-4 py-8 max-w-7xl mx-auto">
+      {/* header */}
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-white font-bold text-2xl tracking-tight">Ops Dashboard</h1>
+          <p className="text-zinc-500 text-sm mt-0.5">{SITES.length} products · refreshes on each load</p>
+        </div>
         <a
-          href="/marketing"
-          className="inline-flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full border border-white/10 text-white/40 hover:text-white/70 hover:border-white/20 transition-all"
-          style={{ background: "rgba(255,255,255,0.04)" }}
+          href="/"
+          className="text-zinc-400 hover:text-white text-sm border border-white/10 rounded-lg px-3 py-1.5 transition-colors"
         >
-          📣 Marketing Dashboard
+          Refresh
         </a>
       </div>
 
-      <div className="relative z-10 max-w-6xl mx-auto px-6 py-16">
+      <SummaryBar statusMap={statusMap} analyticsMap={analyticsMap} />
 
-        {/* Header */}
-        <div className="text-center mb-16">
-          <div
-            className="inline-flex items-center gap-2 mb-6 text-white/40 text-xs font-semibold uppercase tracking-widest px-3 py-1.5 rounded-full border border-white/10"
-            style={{ background: "rgba(255,255,255,0.04)" }}
-          >
-            <span className="dot-live" />
-            {PRODUCTS.length} live AI products
-          </div>
-          <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight mb-4 text-iridescent leading-tight">
-            AI Products
-          </h1>
-          <p className="text-white/45 text-lg max-w-xl mx-auto leading-relaxed">
-            A collection of AI-powered tools for learning, productivity, travel, finance, and beyond.
-          </p>
-        </div>
-
-        {/* Category sections */}
-        {CATEGORIES.map(cat => {
-          const items = PRODUCTS.filter(p => p.category === cat);
-          if (!items.length) return null;
-          return (
-            <section key={cat} className="mb-14">
-              <div className="flex items-center gap-3 mb-5">
-                <span className={`pill ${CATEGORY_COLORS[cat]}`}>{cat}</span>
-                <span className="text-white/20 text-xs">{items.length} {items.length === 1 ? "tool" : "tools"}</span>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {items.map(p => (
-                  <a
-                    key={p.name}
-                    href={p.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="glass-card rounded-2xl p-5 flex items-start gap-4 group"
-                  >
-                    <div className="text-3xl mt-0.5 shrink-0">{p.emoji}</div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className={`font-bold text-base ${p.color}`}>{p.name}</span>
-                        <svg className="w-3 h-3 text-white/20 group-hover:text-white/50 transition-colors shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                      </div>
-                      <p className="text-white/50 text-sm leading-snug">{p.tagline}</p>
-                      <p className="text-white/20 text-xs mt-2 truncate">{p.url.replace("https://", "").replace("http://", "")}</p>
-                    </div>
-                  </a>
-                ))}
-              </div>
-            </section>
-          );
-        })}
-
-        {/* Footer */}
-        <div className="mt-16 pt-8 border-t border-white/[0.06] text-center text-white/25 text-sm">
-          Built by <span className="text-white/45 font-medium">Siva</span> · {new Date().getFullYear()}
-        </div>
-      </div>
-    </div>
+      {CATEGORIES.map((cat) => {
+        const catSites = SITES.filter((s) => s.category === cat);
+        return (
+          <section key={cat} className="mb-10">
+            <h2 className="text-zinc-400 text-xs font-semibold uppercase tracking-widest mb-3">{cat}</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+              {catSites.map((site) => (
+                <SiteCard
+                  key={site.id}
+                  site={site}
+                  statusInfo={statusMap[site.id] ?? { status: "unknown", latency: 0, statusCode: 0 }}
+                  analytics={analyticsMap[site.id] ?? { visitors: 0, pageviews: 0 }}
+                />
+              ))}
+            </div>
+          </section>
+        );
+      })}
+    </main>
   );
 }
