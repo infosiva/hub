@@ -3,6 +3,13 @@
 import { useState, useEffect, useCallback } from "react";
 import type { Site, SiteStatus } from "@/lib/sites";
 
+const SIVAPRAKASAM_PROJECTS = new Set(["voicejournal"]);
+
+function vercelUrl(vercelProject: string): string {
+  const account = SIVAPRAKASAM_PROJECTS.has(vercelProject) ? "sivaprakasam" : "infosiva";
+  return `https://vercel.com/${account}/${vercelProject}`;
+}
+
 function StatusDot({ status }: { status: SiteStatus }) {
   const color =
     status === "up" ? "bg-emerald-400" : status === "down" ? "bg-red-500" : "bg-zinc-500";
@@ -416,7 +423,7 @@ export default function SiteCard({
           Open site ↗
         </a>
         <a
-          href="https://vercel.com/dashboard"
+          href={vercelUrl(site.vercelProject)}
           target="_blank"
           rel="noopener noreferrer"
           className="flex-1 text-center text-[11px] py-1.5 rounded-lg border border-white/10 text-zinc-400 hover:text-white hover:border-white/20 transition-colors"
