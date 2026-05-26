@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /marketing/
+
+Sitemap: https://ai-products-hub.vercel.app/sitemap.xml

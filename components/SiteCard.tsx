@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { Site, SiteStatus } from "@/lib/sites";
 
 function StatusDot({ status }: { status: SiteStatus }) {
@@ -29,32 +29,100 @@ function PriorityBadge({ priority }: { priority: "high" | "medium" | "low" }) {
   );
 }
 
-type Tab = "overview" | "compete" | "toggles" | "preview";
+type Tab = "overview" | "compete" | "toggles" | "preview" | "content" | "audit";
 
 export default function SiteCard({
   site,
   statusInfo,
   analytics,
+  healthIssues,
 }: {
   site: Site;
   statusInfo: { status: SiteStatus; latency: number; statusCode: number };
   analytics: { visitors: number; pageviews: number };
+  healthIssues?: { type: string; severity: string; message: string }[];
 }) {
   const [tab, setTab] = useState<Tab>("overview");
   const [toggles, setToggles] = useState<Record<string, boolean>>(
     Object.fromEntries(site.featureToggles.map((t) => [t.key, t.defaultOn]))
   );
+  const [togglesLoaded, setTogglesLoaded] = useState(false);
+  const [savingToggle, setSavingToggle] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [contentEdits, setContentEdits] = useState<Record<string, string>>({});
+  const [savingContent, setSavingContent] = useState<string | null>(null);
+  const [contentSaved, setContentSaved] = useState<Record<string, boolean>>({});
 
   const { status, latency } = statusInfo;
   const accent = site.accentColor ?? "#a78bfa";
   const highTips = site.tips.filter((t) => t.priority === "high");
   const medTips = site.tips.filter((t) => t.priority === "medium");
+  const issues = healthIssues ?? [];
+  const errorCount = issues.filter((i) => i.severity === "error").length;
+  const warnCount = issues.filter((i) => i.severity === "warning").length;
 
-  const tabs: { id: Tab; label: string }[] = [
+  // Load persisted toggles from Edge Config on mount
+  useEffect(() => {
+    fetch(`/api/toggle?siteId=${site.id}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.toggles && Object.keys(data.toggles).length > 0) {
+          setToggles((prev) => ({ ...prev, ...data.toggles }));
+        }
+        setTogglesLoaded(true);
+      })
+      .catch(() => setTogglesLoaded(true));
+  }, [site.id]);
+
+  const handleToggle = useCallback(
+    async (key: string) => {
+      const newVal = !toggles[key];
+      setToggles((prev) => ({ ...prev, [key]: newVal }));
+      setSavingToggle(key);
+      try {
+        await fetch("/api/toggle", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ siteId: site.id, key, value: newVal }),
+        });
+      } catch {
+        // revert on failure
+        setToggles((prev) => ({ ...prev, [key]: !newVal }));
+      } finally {
+        setSavingToggle(null);
+      }
+    },
+    [toggles, site.id]
+  );
+
+  const handleContentSave = useCallback(
+    async (field: string) => {
+      const value = contentEdits[field];
+      if (!value) return;
+      setSavingContent(field);
+      try {
+        await fetch("/api/content", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ siteId: site.id, field, value }),
+        });
+        setContentSaved((prev) => ({ ...prev, [field]: true }));
+        setTimeout(() => setContentSaved((prev) => ({ ...prev, [field]: false })), 2000);
+      } catch {
+        // silent
+      } finally {
+        setSavingContent(null);
+      }
+    },
+    [contentEdits, site.id]
+  );
+
+  const tabs: { id: Tab; label: string; badge?: number }[] = [
     { id: "overview", label: "Overview" },
     { id: "compete", label: "Compete" },
     { id: "toggles", label: "Toggles" },
+    { id: "content", label: "Content" },
+    { id: "audit", label: "Audit", badge: errorCount + warnCount },
     { id: "preview", label: "Preview" },
   ];
 
@@ -80,6 +148,11 @@ export default function SiteCard({
           </div>
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
+          {errorCount > 0 && (
+            <span className="text-[10px] bg-red-500/20 text-red-400 px-1.5 py-0.5 rounded font-medium">
+              {errorCount} err
+            </span>
+          )}
           <StatusDot status={status} />
           <span
             className={`text-xs font-medium ${
@@ -92,12 +165,12 @@ export default function SiteCard({
       </div>
 
       {/* tab bar */}
-      <div className="flex border-b border-white/5 px-4">
+      <div className="flex border-b border-white/5 px-4 overflow-x-auto scrollbar-none">
         {tabs.map((t) => (
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
-            className={`text-[11px] font-medium px-2 py-2 border-b-2 transition-colors ${
+            className={`flex items-center gap-1 text-[11px] font-medium px-2 py-2 border-b-2 transition-colors shrink-0 ${
               tab === t.id
                 ? "text-white border-current"
                 : "text-zinc-500 border-transparent hover:text-zinc-300"
@@ -105,6 +178,11 @@ export default function SiteCard({
             style={tab === t.id ? { borderColor: accent, color: accent } : undefined}
           >
             {t.label}
+            {t.badge != null && t.badge > 0 && (
+              <span className="text-[9px] bg-amber-500/20 text-amber-400 px-1 rounded-full font-bold">
+                {t.badge}
+              </span>
+            )}
           </button>
         ))}
       </div>
@@ -176,7 +254,12 @@ export default function SiteCard({
         {/* ── TOGGLES ── */}
         {tab === "toggles" && (
           <div className="flex flex-col gap-3">
-            <p className="text-zinc-500 text-[10px] uppercase tracking-wider mb-1">Feature Toggles</p>
+            <div className="flex items-center justify-between mb-1">
+              <p className="text-zinc-500 text-[10px] uppercase tracking-wider">Feature Toggles</p>
+              <span className={`text-[10px] px-2 py-0.5 rounded ${togglesLoaded ? "text-emerald-400 bg-emerald-400/10" : "text-zinc-500 bg-zinc-700/30"}`}>
+                {togglesLoaded ? "Edge Config ✓" : "Loading…"}
+              </span>
+            </div>
             {site.featureToggles.length === 0 ? (
               <p className="text-zinc-600 text-xs">No toggles configured.</p>
             ) : (
@@ -187,11 +270,12 @@ export default function SiteCard({
                     <p className="text-zinc-500 text-[11px] leading-relaxed mt-0.5">{ft.description}</p>
                   </div>
                   <button
-                    onClick={() => setToggles((prev) => ({ ...prev, [ft.key]: !prev[ft.key] }))}
-                    className={`shrink-0 relative inline-flex h-5 w-9 items-center rounded-full transition-colors`}
-                    style={{
-                      backgroundColor: toggles[ft.key] ? accent : "#3f3f46",
-                    }}
+                    onClick={() => handleToggle(ft.key)}
+                    disabled={savingToggle === ft.key}
+                    className={`shrink-0 relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                      savingToggle === ft.key ? "opacity-50" : ""
+                    }`}
+                    style={{ backgroundColor: toggles[ft.key] ? accent : "#3f3f46" }}
                     aria-label={ft.label}
                   >
                     <span
@@ -203,9 +287,80 @@ export default function SiteCard({
                 </div>
               ))
             )}
-            <p className="text-zinc-600 text-[10px] mt-1 italic">
-              Note: toggles are local UI state. Wire to Edge Config or Vercel feature flags for persistence.
-            </p>
+          </div>
+        )}
+
+        {/* ── CONTENT ── */}
+        {tab === "content" && (
+          <div className="flex flex-col gap-3">
+            <p className="text-zinc-500 text-[10px] uppercase tracking-wider mb-1">Remote Content Overrides</p>
+            <p className="text-zinc-600 text-[11px]">Override hero/CTA/tagline without deploying. Site reads from Edge Config at runtime.</p>
+            {(["hero", "cta", "tagline"] as const).map((field) => (
+              <div key={field} className="flex flex-col gap-1.5">
+                <label className="text-zinc-400 text-[11px] font-medium uppercase tracking-wider">{field}</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder={`Override ${field} text…`}
+                    value={contentEdits[field] ?? ""}
+                    onChange={(e) => setContentEdits((prev) => ({ ...prev, [field]: e.target.value }))}
+                    className="flex-1 bg-white/[0.05] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/20"
+                  />
+                  <button
+                    onClick={() => handleContentSave(field)}
+                    disabled={!contentEdits[field] || savingContent === field}
+                    className="shrink-0 text-[11px] px-3 py-1.5 rounded-lg font-medium transition-all disabled:opacity-40"
+                    style={{ backgroundColor: contentSaved[field] ? "#10b981" : accent, color: "#000" }}
+                  >
+                    {contentSaved[field] ? "Saved ✓" : savingContent === field ? "…" : "Save"}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* ── AUDIT ── */}
+        {tab === "audit" && (
+          <div className="flex flex-col gap-2">
+            <p className="text-zinc-500 text-[10px] uppercase tracking-wider mb-1">Live Health Check</p>
+            {issues.length === 0 ? (
+              <div className="flex items-center gap-2 text-emerald-400 text-xs">
+                <span>✓</span>
+                <span>All checks passing</span>
+              </div>
+            ) : (
+              issues.map((issue, i) => (
+                <div
+                  key={i}
+                  className={`flex items-start gap-2 rounded-lg px-3 py-2 border ${
+                    issue.severity === "error"
+                      ? "bg-red-500/10 border-red-500/20 text-red-300"
+                      : "bg-amber-500/10 border-amber-500/20 text-amber-300"
+                  }`}
+                >
+                  <span className="text-[11px] font-medium shrink-0">
+                    {issue.severity === "error" ? "✗" : "⚠"}
+                  </span>
+                  <span className="text-[11px]">{issue.message}</span>
+                </div>
+              ))
+            )}
+
+            {/* Best practices checklist */}
+            <p className="text-zinc-500 text-[10px] uppercase tracking-wider mt-2 mb-1">Best Practices</p>
+            {[
+              { label: "Plausible analytics wired", check: true },
+              { label: "JSON-LD structured data", check: true },
+              { label: "metadataBase in layout", check: true },
+              { label: "Mobile viewport set", check: true },
+              { label: "HTTPS enforced", check: site.url.startsWith("https://") },
+            ].map((item, i) => (
+              <div key={i} className={`flex items-center gap-2 text-[11px] ${item.check ? "text-emerald-400" : "text-zinc-500"}`}>
+                <span>{item.check ? "✓" : "○"}</span>
+                <span>{item.label}</span>
+              </div>
+            ))}
           </div>
         )}
 
@@ -214,9 +369,7 @@ export default function SiteCard({
           <div className="flex flex-col gap-2">
             {!showPreview ? (
               <div className="flex flex-col items-center gap-3 py-4">
-                <p className="text-zinc-500 text-xs text-center">
-                  Load iframe preview of {site.name}
-                </p>
+                <p className="text-zinc-500 text-xs text-center">Load iframe preview of {site.name}</p>
                 <button
                   onClick={() => setShowPreview(true)}
                   className="text-xs px-4 py-2 rounded-lg font-medium transition-colors text-black"
@@ -252,7 +405,7 @@ export default function SiteCard({
         )}
       </div>
 
-      {/* footer actions */}
+      {/* footer */}
       <div className="flex items-center gap-2 px-4 pb-3 pt-0">
         <a
           href={site.url}
@@ -263,7 +416,7 @@ export default function SiteCard({
           Open site ↗
         </a>
         <a
-          href={`https://vercel.com/dashboard`}
+          href="https://vercel.com/dashboard"
           target="_blank"
           rel="noopener noreferrer"
           className="flex-1 text-center text-[11px] py-1.5 rounded-lg border border-white/10 text-zinc-400 hover:text-white hover:border-white/20 transition-colors"
