@@ -301,8 +301,8 @@ export default function SiteCard({
         {tab === "content" && (
           <div className="flex flex-col gap-3">
             <p className="text-zinc-500 text-[10px] uppercase tracking-wider mb-1">Remote Content Overrides</p>
-            <p className="text-zinc-600 text-[11px]">Override hero/CTA/tagline without deploying. Site reads from Edge Config at runtime.</p>
-            {(["hero", "cta", "tagline"] as const).map((field) => (
+            <p className="text-zinc-600 text-[11px]">Override headline/CTA/tagline without deploying. Site reads from Edge Config at runtime.</p>
+            {(["headline", "subheadline", "cta", "tagline"] as const).map((field) => (
               <div key={field} className="flex flex-col gap-1.5">
                 <label className="text-zinc-400 text-[11px] font-medium uppercase tracking-wider">{field}</label>
                 <div className="flex gap-2">
