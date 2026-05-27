@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 
-const CONTENT_SITES = ["tutiq", "kwizzo", "quizbites", "speakiq", "invoicemint"] as const;
+const CONTENT_SITES = ["tutiq", "kwizzo", "quizbites", "speakiq", "invoicemint", "roamplan"] as const;
 type ContentSite = (typeof CONTENT_SITES)[number];
 type ContentField = "headline" | "subheadline" | "cta" | "tagline";
 
@@ -19,6 +19,7 @@ const SITE_LABELS: Record<ContentSite, string> = {
   quizbites: "QuizBites",
   speakiq: "SpeakIQ",
   invoicemint: "InvoiceMint",
+  roamplan: "RoamPlan",
 };
 
 export default function GlobalContentPanel() {
