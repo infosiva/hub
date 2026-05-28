@@ -2,6 +2,7 @@ import { SITES, CATEGORIES, type SiteStatus } from "@/lib/sites";
 import SiteCard from "@/components/SiteCard";
 import ProvidersPanel from "@/components/ProvidersPanel";
 import GlobalContentPanel from "@/components/GlobalContentPanel";
+import GlobalFlagsPanel from "@/components/GlobalFlagsPanel";
 
 interface HealthIssue {
   type: string;
@@ -129,6 +130,7 @@ export default async function DashboardPage() {
       <SummaryBar statusMap={statusMap} analyticsMap={analyticsMap} healthMap={healthMap} />
 
       {/* Global Content Override */}
+      <GlobalFlagsPanel />
       <GlobalContentPanel />
 
       {/* AI Providers Panel */}
