@@ -154,20 +154,40 @@ export default function SiteCard({
             <span className="text-zinc-500 text-xs truncate block">{site.tagline}</span>
           </div>
         </div>
-        <div className="flex items-center gap-1.5 shrink-0">
-          {errorCount > 0 && (
-            <span className="text-[10px] bg-red-500/20 text-red-400 px-1.5 py-0.5 rounded font-medium">
-              {errorCount} err
+        <div className="flex flex-col items-end gap-1 shrink-0">
+          <div className="flex items-center gap-1.5">
+            {errorCount > 0 && (
+              <span className="text-[10px] bg-red-500/20 text-red-400 px-1.5 py-0.5 rounded font-medium">
+                {errorCount} err
+              </span>
+            )}
+            <StatusDot status={status} />
+            <span
+              className={`text-xs font-medium ${
+                status === "up" ? "text-emerald-400" : status === "down" ? "text-red-400" : "text-zinc-400"
+              }`}
+            >
+              {status}
             </span>
+          </div>
+          {status !== "unknown" && (
+            <div className="flex items-center gap-1.5">
+              <span className="text-zinc-600 text-[10px]">checked just now</span>
+              {latency > 0 && (
+                <span
+                  className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
+                    latency < 200
+                      ? "bg-emerald-500/15 text-emerald-400"
+                      : latency < 500
+                      ? "bg-amber-500/15 text-amber-400"
+                      : "bg-red-500/15 text-red-400"
+                  }`}
+                >
+                  {latency}ms
+                </span>
+              )}
+            </div>
           )}
-          <StatusDot status={status} />
-          <span
-            className={`text-xs font-medium ${
-              status === "up" ? "text-emerald-400" : status === "down" ? "text-red-400" : "text-zinc-400"
-            }`}
-          >
-            {status === "up" ? `${latency}ms` : status}
-          </span>
         </div>
       </div>
 
