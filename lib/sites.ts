@@ -584,7 +584,7 @@ export const SITES: Site[] = [
   {
     id: "voicejournal",
     name: "VoiceJournal",
-    url: "https://voicejournal.app",
+    url: "https://ai-voice-home.vercel.app",
     vercelProject: "voicejournal",
     emoji: "🎤",
     category: "Health",
