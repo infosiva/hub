@@ -584,7 +584,7 @@ export const SITES: Site[] = [
   {
     id: "voicejournal",
     name: "VoiceJournal",
-    url: "https://ai-voice-home.vercel.app",
+    url: "https://voicejournal.vercel.app",
     vercelProject: "voicejournal",
     emoji: "🎤",
     category: "Health",
@@ -788,6 +788,33 @@ export const SITES: Site[] = [
     ],
   },
 
+  // ── Video ─────────────────────────────────────────────────────
+  {
+    id: "vidrush",
+    name: "Vidrush",
+    url: "https://vidrush.app",
+    vercelProject: "vidrush",
+    emoji: "🎬",
+    category: "AI Tools",
+    tagline: "Text to video in seconds — powered by Kling AI",
+    accentColor: "#e879f9",
+    tips: [
+      { label: "Show generated video examples above fold", priority: "high" },
+      { label: "Free 2 videos/day — no account needed", priority: "high" },
+      { label: "Prompt enhancer makes any prompt cinematic", priority: "medium" },
+    ],
+    competitors: [
+      { name: "Runway", url: "https://runwayml.com", strength: "Gen-2 + Gen-3, creative professional trust" },
+      { name: "Sora", url: "https://sora.com", strength: "OpenAI brand, highest quality" },
+      { name: "Kling AI", url: "https://klingai.com", strength: "Fast, cheap, good quality — our backend" },
+    ],
+    featureToggles: [
+      { key: "prompt_enhancer", label: "Prompt Enhancer", description: "AI improves your prompt before generating", defaultOn: true },
+      { key: "gallery", label: "Public Gallery", description: "Community gallery of generated videos", defaultOn: false },
+      { key: "hd_mode", label: "HD Mode", description: "Generate in 1080p (Pro only)", defaultOn: false },
+    ],
+  },
+
   // ── AI Platform ───────────────────────────────────────────────
   {
     id: "neuralos",
@@ -870,6 +897,7 @@ export const SITES: Site[] = [
     id: "pdfideas",
     name: "PDFIdeas",
     url: "https://pdfideas.vercel.app",
+    // TODO: needs custom domain pdfideas.app
     vercelProject: "pdfideas",
     emoji: "📄",
     category: "AI Tools",
@@ -921,7 +949,7 @@ export const SITES: Site[] = [
   {
     id: "homecanvas",
     name: "HomeCanvas",
-    url: "https://eldercare.plus",
+    url: "https://homecanvas.vercel.app",
     vercelProject: "homecanvas",
     emoji: "🏠",
     category: "Marketplace",
@@ -947,7 +975,7 @@ export const SITES: Site[] = [
   {
     id: "replydesk",
     name: "ReplyDesk",
-    url: "https://switchboard-ai.vercel.app",
+    url: "https://invoicemint.cloud",
     vercelProject: "replydesk",
     emoji: "💬",
     category: "AI Tools",
