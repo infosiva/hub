@@ -19,6 +19,11 @@ export interface FeatureToggle {
   defaultOn: boolean;
 }
 
+export interface StackItem {
+  label: string;
+  value: string;
+}
+
 export interface Site {
   id: string;
   name: string;
@@ -31,6 +36,7 @@ export interface Site {
   competitors: Competitor[];
   featureToggles: FeatureToggle[];
   accentColor: string;
+  stack?: StackItem[];
 }
 
 export const SITES: Site[] = [
@@ -60,6 +66,14 @@ export const SITES: Site[] = [
       { key: "parent_mode", label: "Parent Mode", description: "Parent view with child progress overview", defaultOn: false },
       { key: "voice_tutor", label: "Voice Tutor", description: "Text-to-speech for lesson content", defaultOn: false },
     ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Chatbot", value: "FloatingChat — createChatRoute" },
+      { label: "Design", value: "Canvas + Open Design (structured wireframes)" },
+      { label: "Auth", value: "NextAuth v5 magic link" },
+      { label: "Skills used", value: "/design-html, /animate, /emil-design-eng" },
+    ],
   },
   {
     id: "kwizzo",
@@ -86,6 +100,14 @@ export const SITES: Site[] = [
       { key: "voice_questions", label: "Voice Q&A", description: "Read questions aloud via TTS", defaultOn: false },
       { key: "seasonal_packs", label: "Seasonal Packs", description: "Seasonal themed quiz collections", defaultOn: true },
     ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Chatbot", value: "FloatingChat — createChatRoute" },
+      { label: "Design", value: "Magic UI (shimmer buttons, animated cards)" },
+      { label: "Auth", value: "NextAuth v5 magic link" },
+      { label: "Skills used", value: "/design-html, /animate, /baseline-ui" },
+    ],
   },
   {
     id: "quizbites",
@@ -111,6 +133,13 @@ export const SITES: Site[] = [
       { key: "pdf_export", label: "PDF Export", description: "Export quiz results as PDF report", defaultOn: false },
       { key: "ai_quiz_gen", label: "AI Quiz Gen", description: "Generate quiz from any topic or URL", defaultOn: true },
     ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Chatbot", value: "FloatingChat — createChatRoute" },
+      { label: "Design", value: "Aceternity UI (3D cards, spotlight)" },
+      { label: "Skills used", value: "/animate, /emil-design-eng, /fixing-accessibility" },
+    ],
   },
   {
     id: "quizbytesdaily",
@@ -135,6 +164,12 @@ export const SITES: Site[] = [
       { key: "email_digest", label: "Email Digest", description: "Daily quiz email subscription", defaultOn: false },
       { key: "share_card", label: "Share Card", description: "Shareable score image for social", defaultOn: true },
       { key: "streak", label: "Streak Tracking", description: "Daily quiz streak visible on homepage", defaultOn: true },
+    ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Design", value: "Magic UI (shimmer, animated cards)" },
+      { label: "Skills used", value: "/design-html, /animate" },
     ],
   },
 
@@ -164,6 +199,13 @@ export const SITES: Site[] = [
       { key: "streak_widget", label: "Streak Widget", description: "Daily streak counter on dashboard", defaultOn: true },
       { key: "speaking_challenges", label: "Speaking Challenges", description: "Daily 30-second speaking challenges", defaultOn: false },
     ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "callAI cascade (Groq → Gemini → Cerebras)" },
+      { label: "Chatbot", value: "FloatingChat — createChatRoute" },
+      { label: "Design", value: "Canvas → Emil polish (custom)" },
+      { label: "Skills used", value: "/design-html, /emil-design-eng, /animate, /text-to-speech" },
+    ],
   },
 
   // ── Finance ───────────────────────────────────────────────────
@@ -191,6 +233,14 @@ export const SITES: Site[] = [
       { key: "market_ticker", label: "Market Ticker", description: "Live market ticker on homepage", defaultOn: false },
       { key: "ai_insights", label: "AI Insights", description: "AI spending pattern analysis", defaultOn: true },
     ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Chatbot", value: "FloatingChat — createChatRoute" },
+      { label: "Design", value: "Canvas + Framer Motion (calm animations)" },
+      { label: "Data", value: "Tremor charts for portfolio metrics" },
+      { label: "Skills used", value: "/design-html, /animate, /d3-visualization" },
+    ],
   },
   {
     id: "invoicemint",
@@ -215,6 +265,14 @@ export const SITES: Site[] = [
       { key: "no_auth_generate", label: "No-Auth Generate", description: "Generate invoice without account", defaultOn: true },
       { key: "recurring_invoices", label: "Recurring Invoices", description: "Auto-send recurring invoices", defaultOn: false },
       { key: "stripe_pay", label: "Stripe Pay Link", description: "Add pay-now button via Stripe", defaultOn: false },
+    ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Chatbot", value: "FloatingChat — createChatRoute" },
+      { label: "Design", value: "Canvas → Emil polish (custom)" },
+      { label: "Payments", value: "Stripe (pay link)" },
+      { label: "Skills used", value: "/design-html, /animate, /emil-design-eng" },
     ],
   },
 
@@ -243,6 +301,13 @@ export const SITES: Site[] = [
       { key: "share_link", label: "Share Link", description: "Public shareable itinerary links", defaultOn: false },
       { key: "hotel_search", label: "Hotel Search", description: "Integrated hotel search via affiliate", defaultOn: false },
     ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Chatbot", value: "FloatingChat — createChatRoute" },
+      { label: "Design", value: "Canvas → Emil polish; motionsites Wanderful Hero" },
+      { label: "Skills used", value: "/design-html, /animate, /emil-design-eng, /gsap-scrolltrigger" },
+    ],
   },
   {
     id: "flightbrain",
@@ -267,6 +332,12 @@ export const SITES: Site[] = [
       { key: "delay_prediction", label: "Delay Prediction", description: "AI delay likelihood score per flight", defaultOn: true },
       { key: "price_alerts", label: "Price Alerts", description: "Email alerts when flight price drops", defaultOn: false },
       { key: "live_map", label: "Live Map", description: "Live flight map on homepage", defaultOn: false },
+    ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 + Cloudflare Worker" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Design", value: "Tremor (dashboard/data-heavy)" },
+      { label: "Skills used", value: "/design-html, /d3-visualization, /animate" },
     ],
   },
 
@@ -295,6 +366,13 @@ export const SITES: Site[] = [
       { key: "cover_letter", label: "Cover Letter", description: "Auto-generate matching cover letter", defaultOn: true },
       { key: "linkedin_import", label: "LinkedIn Import", description: "Import LinkedIn profile to build resume", defaultOn: false },
     ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq, fetch style)" },
+      { label: "Chatbot", value: "FloatingChat — createChatRoute" },
+      { label: "Design", value: "Canvas → Emil polish; motionsites VaultShield" },
+      { label: "Skills used", value: "/design-html, /animate, /emil-design-eng, /fixing-accessibility" },
+    ],
   },
   {
     id: "aijobs",
@@ -319,6 +397,12 @@ export const SITES: Site[] = [
       { key: "email_alerts", label: "Email Alerts", description: "Daily job alert emails", defaultOn: false },
       { key: "salary_filter", label: "Salary Filter", description: "Filter jobs by salary range", defaultOn: true },
       { key: "remote_only", label: "Remote Only Toggle", description: "One-click remote jobs filter", defaultOn: true },
+    ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Design", value: "Canvas + Open Design (structured)" },
+      { label: "Skills used", value: "/design-html, /animate" },
     ],
   },
 
@@ -347,6 +431,13 @@ export const SITES: Site[] = [
       { key: "platform_preview", label: "Platform Preview", description: "Show how post looks on each platform", defaultOn: true },
       { key: "schedule_connect", label: "Schedule Connect", description: "Connect Buffer/Later for direct scheduling", defaultOn: false },
     ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq) — already correct" },
+      { label: "Chatbot", value: "FloatingChat — createChatRoute" },
+      { label: "Design", value: "Magic UI (shimmer, animated calendar grid)" },
+      { label: "Skills used", value: "/design-html, /animate, /emil-design-eng" },
+    ],
   },
   {
     id: "weekendai",
@@ -371,6 +462,12 @@ export const SITES: Site[] = [
       { key: "location_detect", label: "Auto Location", description: "Auto-detect city for local suggestions", defaultOn: true },
       { key: "group_mode", label: "Group Mode", description: "Plan weekends with friends via shared link", defaultOn: false },
       { key: "booking_links", label: "Booking Links", description: "Add affiliate booking links to activities", defaultOn: false },
+    ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Design", value: "Canvas + Emil polish" },
+      { label: "Skills used", value: "/design-html, /animate" },
     ],
   },
 
@@ -399,6 +496,12 @@ export const SITES: Site[] = [
       { key: "embeddable_badge", label: "Compliance Badge", description: "Embeddable score badge for websites", defaultOn: false },
       { key: "pdf_report", label: "PDF Report", description: "Download compliance audit as PDF", defaultOn: false },
     ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Design", value: "Canvas + Open Design (structured)" },
+      { label: "Skills used", value: "/design-html, /animate, /fixing-accessibility" },
+    ],
   },
 
   // ── Developer ─────────────────────────────────────────────────
@@ -426,6 +529,13 @@ export const SITES: Site[] = [
       { key: "github_connect", label: "GitHub Connect", description: "One-click GitHub repo integration", defaultOn: false },
       { key: "slack_alerts", label: "Slack Alerts", description: "Alert on agent errors via Slack webhook", defaultOn: false },
     ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router (monorepo)" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Charts", value: "Tremor (trace waterfall, metric cards)" },
+      { label: "Design", value: "Tremor + Canvas (CodeNest motionsites template)" },
+      { label: "Skills used", value: "/design-html, /animate, /interface-design, /d3-visualization" },
+    ],
   },
   {
     id: "clawdbotai",
@@ -450,6 +560,12 @@ export const SITES: Site[] = [
       { key: "project_submissions", label: "Project Submissions", description: "Public submit-your-project form", defaultOn: true },
       { key: "embed_demo", label: "Embed Demo", description: "Embeddable chatbot demo on homepage", defaultOn: true },
       { key: "upvoting", label: "Upvoting", description: "Community upvoting for project ranking", defaultOn: false },
+    ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Design", value: "Canvas + Open Design" },
+      { label: "Skills used", value: "/design-html, /animate" },
     ],
   },
   {
@@ -476,6 +592,12 @@ export const SITES: Site[] = [
       { key: "template_gallery", label: "Template Gallery", description: "Browse templates without login", defaultOn: true },
       { key: "vercel_deploy", label: "Vercel Deploy", description: "One-click Vercel deployment from builder", defaultOn: false },
     ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Design", value: "Canvas → Emil polish" },
+      { label: "Skills used", value: "/design-html, /animate, /emil-design-eng" },
+    ],
   },
   {
     id: "ninjapa",
@@ -501,6 +623,12 @@ export const SITES: Site[] = [
       { key: "integrations", label: "Integrations", description: "Zapier/n8n integration panel", defaultOn: false },
       { key: "voice_input", label: "Voice Input", description: "Voice command task creation", defaultOn: false },
     ],
+    stack: [
+      { label: "Framework", value: "Node.js + PM2 (VPS)" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Design", value: "Canvas + Open Design" },
+      { label: "Skills used", value: "/design-html, /animate" },
+    ],
   },
   {
     id: "clipforge",
@@ -525,6 +653,13 @@ export const SITES: Site[] = [
       { key: "auto_captions", label: "Auto Captions", description: "Burn captions into video clips", defaultOn: true },
       { key: "viral_predictor", label: "Viral Score", description: "AI score for clip shareability", defaultOn: false },
       { key: "multi_platform", label: "Multi-Platform", description: "Export in Instagram/TikTok/YouTube formats", defaultOn: true },
+    ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Media Processing", value: "fal.ai (video), /speech-to-text" },
+      { label: "Design", value: "Canvas → Emil polish" },
+      { label: "Skills used", value: "/design-html, /animate, /fal-generate, /speech-to-text" },
     ],
   },
 
@@ -553,6 +688,14 @@ export const SITES: Site[] = [
       { key: "game_gallery", label: "Game Gallery", description: "Community game gallery", defaultOn: true },
       { key: "multiplayer", label: "Multiplayer Mode", description: "Real-time multiplayer game sessions", defaultOn: false },
     ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Game Engine", value: "Phaser 3 (canvas rendering)" },
+      { label: "Design", value: "Aceternity UI (3D cards, spotlight)" },
+      { label: "Image Gen", value: "fal.ai FLUX-schnell" },
+      { label: "Skills used", value: "/design-html, /animate, /fal-generate, /threejs" },
+    ],
   },
 
   // ── Health ────────────────────────────────────────────────────
@@ -580,6 +723,13 @@ export const SITES: Site[] = [
       { key: "doctor_share", label: "Doctor Share", description: "Generate shareable health report PDF", defaultOn: false },
       { key: "reminders", label: "Reminders", description: "Push notifications for vital logging reminders", defaultOn: false },
     ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Charts", value: "Tremor + Framer Motion" },
+      { label: "Design", value: "Canvas + Framer Motion (calm animations)" },
+      { label: "Skills used", value: "/design-html, /animate, /d3-visualization" },
+    ],
   },
   {
     id: "voicejournal",
@@ -604,6 +754,13 @@ export const SITES: Site[] = [
       { key: "demo_record", label: "Demo Recording", description: "Try voice recording without account", defaultOn: true },
       { key: "emotion_detect", label: "Emotion Detection", description: "AI detects mood from voice tone", defaultOn: false },
       { key: "mood_summary", label: "Mood Summary", description: "Weekly AI mood summary email", defaultOn: false },
+    ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Voice", value: "Web Speech API + /speech-to-text" },
+      { label: "Design", value: "Canvas → Emil polish" },
+      { label: "Skills used", value: "/design-html, /animate, /text-to-speech, /speech-to-text" },
     ],
   },
 
@@ -632,6 +789,13 @@ export const SITES: Site[] = [
       { key: "industry_templates", label: "Industry Templates", description: "Pre-built scripts for salon/dental/restaurant", defaultOn: true },
       { key: "sms_followup", label: "SMS Follow-up", description: "Auto SMS confirmation after AI booking", defaultOn: false },
     ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Voice", value: "ElevenLabs TTS + Twilio" },
+      { label: "Design", value: "Canvas → Emil polish" },
+      { label: "Skills used", value: "/design-html, /animate, /text-to-speech, /emil-design-eng" },
+    ],
   },
   {
     id: "rideflow",
@@ -657,6 +821,13 @@ export const SITES: Site[] = [
       { key: "driver_app", label: "Driver App Link", description: "Mobile app download CTA", defaultOn: false },
       { key: "fleet_mode", label: "Fleet Mode", description: "Multi-driver fleet management view", defaultOn: false },
     ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Maps", value: "Google Maps API + route optimizer" },
+      { label: "Design", value: "Canvas → Emil polish" },
+      { label: "Skills used", value: "/design-html, /animate, /d3-visualization" },
+    ],
   },
   {
     id: "meetscribe",
@@ -681,6 +852,13 @@ export const SITES: Site[] = [
       { key: "paste_demo", label: "Paste Demo", description: "Try with pasted transcript, no login", defaultOn: true },
       { key: "zoom_connect", label: "Zoom Connect", description: "Auto-join and transcribe Zoom meetings", defaultOn: false },
       { key: "crm_sync", label: "CRM Sync", description: "Push action items to Salesforce/HubSpot", defaultOn: false },
+    ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Transcription", value: "/speech-to-text (Whisper)" },
+      { label: "Design", value: "Canvas → Emil polish" },
+      { label: "Skills used", value: "/design-html, /animate, /speech-to-text, /emil-design-eng" },
     ],
   },
 
@@ -709,6 +887,12 @@ export const SITES: Site[] = [
       { key: "cricket_widget", label: "Cricket Widget", description: "Live cricket scores widget", defaultOn: true },
       { key: "whatsapp_share", label: "WhatsApp Share", description: "Share articles via WhatsApp button", defaultOn: true },
     ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router (static export)" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Design", value: "Magic UI (animated news cards)" },
+      { label: "Skills used", value: "/design-html, /animate, /content-research-writer" },
+    ],
   },
   {
     id: "worldtrends",
@@ -734,6 +918,13 @@ export const SITES: Site[] = [
       { key: "region_filter", label: "Region Filter", description: "Filter by geographic region", defaultOn: false },
       { key: "share_card", label: "Share Card", description: "Share trend as image card", defaultOn: false },
     ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Data", value: "Open Design grid components" },
+      { label: "Design", value: "Open Design grid (data-dense)" },
+      { label: "Skills used", value: "/design-html, /animate, /d3-visualization" },
+    ],
   },
   {
     id: "quicktech",
@@ -758,6 +949,13 @@ export const SITES: Site[] = [
       { key: "ai_summaries", label: "AI Summaries", description: "One-line AI summary on every article", defaultOn: true },
       { key: "newsletter", label: "Newsletter", description: "Daily tech digest email subscription", defaultOn: false },
       { key: "youtube_cta", label: "YouTube CTA", description: "Link to YouTube channel from articles", defaultOn: false },
+    ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Content", value: "/content-research-writer + /social-content" },
+      { label: "Design", value: "Canvas → Emil polish" },
+      { label: "Skills used", value: "/design-html, /animate, /content-research-writer" },
     ],
   },
 
@@ -786,6 +984,13 @@ export const SITES: Site[] = [
       { key: "msp_compare", label: "MSP Compare", description: "Compare live price vs MSP", defaultOn: true },
       { key: "hindi_ui", label: "Hindi UI", description: "Switch UI language to Hindi", defaultOn: false },
     ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Data", value: "Govt AgriMarket API + Groq summaries" },
+      { label: "Design", value: "Canvas + Open Design (data table)" },
+      { label: "Skills used", value: "/design-html, /animate, /d3-visualization" },
+    ],
   },
 
   // ── Video ─────────────────────────────────────────────────────
@@ -812,6 +1017,13 @@ export const SITES: Site[] = [
       { key: "prompt_enhancer", label: "Prompt Enhancer", description: "AI improves your prompt before generating", defaultOn: true },
       { key: "gallery", label: "Public Gallery", description: "Community gallery of generated videos", defaultOn: false },
       { key: "hd_mode", label: "HD Mode", description: "Generate in 1080p (Pro only)", defaultOn: false },
+    ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Video Gen", value: "fal.ai Kling v1.5 Pro (text-to-video)" },
+      { label: "Design", value: "Canvas → Emil polish" },
+      { label: "Skills used", value: "/design-html, /animate, /fal-kling-o3, /fal-generate" },
     ],
   },
 
@@ -840,6 +1052,14 @@ export const SITES: Site[] = [
       { key: "template_gallery", label: "Template Gallery", description: "Pre-built agent flow templates", defaultOn: true },
       { key: "voice_interface", label: "Voice Interface", description: "Voice command interface for agents", defaultOn: false },
     ],
+    stack: [
+      { label: "Framework", value: "Next.js 16 App Router" },
+      { label: "Auth", value: "NextAuth v5" },
+      { label: "DB", value: "Prisma 7 + Neon (Postgres)" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Design", value: "Aceternity UI + Canvas (cinematic)" },
+      { label: "Skills used", value: "/design-html, /animate, /interface-design, /emit-design-eng" },
+    ],
   },
   {
     id: "aicoachlab",
@@ -865,6 +1085,13 @@ export const SITES: Site[] = [
       { key: "voice_coach", label: "Voice Coach", description: "Speak with AI coach via microphone", defaultOn: false },
       { key: "goal_tracking", label: "Goal Tracking", description: "Track progress towards stated goals", defaultOn: true },
     ],
+    stack: [
+      { label: "Framework", value: "Next.js 16 App Router" },
+      { label: "DB", value: "Neon (Postgres)" },
+      { label: "AI Model", value: "NVIDIA NIM (meta/llama-3.1-8b-instruct)" },
+      { label: "Design", value: "Canvas + Framer Motion (AI workflow hero)" },
+      { label: "Skills used", value: "/design-html, /animate, /interface-design, /baseline-ui" },
+    ],
   },
   {
     id: "zerostaff",
@@ -889,6 +1116,14 @@ export const SITES: Site[] = [
       { key: "workflow_demo", label: "Workflow Demo", description: "Live automation workflow on homepage", defaultOn: false },
       { key: "roi_calc", label: "ROI Calculator", description: "Savings calculator vs hiring staff", defaultOn: false },
       { key: "case_studies", label: "Case Studies", description: "Real automation case studies visible", defaultOn: false },
+    ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "Auth", value: "NextAuth v5" },
+      { label: "DB", value: "Drizzle + Neon" },
+      { label: "Payments", value: "Stripe + QStash queues" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Skills used", value: "/design-html, /animate, /emil-design-eng, /interface-design" },
     ],
   },
 
@@ -919,6 +1154,13 @@ export const SITES: Site[] = [
       { key: "gumroad_export", label: "Gumroad Export", description: "One-click publish to Gumroad", defaultOn: false },
       { key: "bulk_generate", label: "Bulk Generate", description: "Generate 10 ideas at once (Pro)", defaultOn: false },
     ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "PDF Gen", value: "/make-pdf (code-based)" },
+      { label: "Design", value: "Canvas → Emil polish" },
+      { label: "Skills used", value: "/design-html, /animate, /make-pdf, /copywriting" },
+    ],
   },
   {
     id: "parceliq",
@@ -944,6 +1186,13 @@ export const SITES: Site[] = [
       { key: "affiliate_links", label: "Affiliate Links", description: "Carrier affiliate links on results", defaultOn: true },
       { key: "bulk_compare", label: "Bulk Compare", description: "Compare multiple parcels at once", defaultOn: false },
       { key: "price_alerts", label: "Price Alerts", description: "Email alerts for price drops", defaultOn: false },
+    ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Data", value: "Carrier APIs (Hermes, DPD, Royal Mail)" },
+      { label: "Design", value: "Canvas → Emil polish" },
+      { label: "Skills used", value: "/design-html, /animate, /d3-visualization" },
     ],
   },
   {
@@ -971,6 +1220,13 @@ export const SITES: Site[] = [
       { key: "provider_signup", label: "Provider Signup", description: "Provider onboarding form", defaultOn: false },
       { key: "ai_matching", label: "AI Matching", description: "AI-powered provider recommendation", defaultOn: true },
     ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Hero Images", value: "Higgsfield nano_banana_2 model" },
+      { label: "DB", value: "Supabase (provider listings)" },
+      { label: "Skills used", value: "/design-html, /animate, /higgsfield-generate, /fal-generate" },
+    ],
   },
   {
     id: "replydesk",
@@ -996,6 +1252,12 @@ export const SITES: Site[] = [
       { key: "live_demo", label: "Live Demo", description: "Interactive support ticket demo on homepage", defaultOn: false },
       { key: "shopify_widget", label: "Shopify Widget", description: "Shopify app integration", defaultOn: false },
       { key: "auto_draft", label: "Auto Draft", description: "AI auto-drafts reply on ticket arrival", defaultOn: true },
+    ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Design", value: "Canvas → Emil polish" },
+      { label: "Skills used", value: "/design-html, /animate, /interface-design, /emil-design-eng" },
     ],
   },
   {
@@ -1023,6 +1285,13 @@ export const SITES: Site[] = [
       { key: "zip_export", label: "ZIP Export", description: "Download all outputs as ZIP", defaultOn: false },
       { key: "white_label", label: "White Label", description: "Client-ready report with custom branding", defaultOn: false },
     ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Content Gen", value: "Groq multi-format generation" },
+      { label: "Design", value: "Canvas → Emil polish" },
+      { label: "Skills used", value: "/design-html, /animate, /content-research-writer, /social-content" },
+    ],
   },
   {
     id: "agencyos",
@@ -1048,6 +1317,13 @@ export const SITES: Site[] = [
       { key: "client_portal", label: "Client Portal", description: "Shareable output links for clients", defaultOn: false },
       { key: "unlimited_mode", label: "Unlimited Mode", description: "No brief limit for Pro subscribers", defaultOn: false },
       { key: "brand_kit", label: "Brand Kit", description: "Apply client brand colors/fonts to outputs", defaultOn: false },
+    ],
+    stack: [
+      { label: "Framework", value: "Next.js 15 App Router" },
+      { label: "AI Model", value: "llama-3.1-8b-instant (Groq)" },
+      { label: "Content Gen", value: "Groq multi-output (7 formats) from single brief" },
+      { label: "Design", value: "Canvas → Emil polish" },
+      { label: "Skills used", value: "/design-html, /animate, /content-research-writer, /social-content, /ad-creative" },
     ],
   },
 ];

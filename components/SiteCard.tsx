@@ -36,7 +36,7 @@ function PriorityBadge({ priority }: { priority: "high" | "medium" | "low" }) {
   );
 }
 
-type Tab = "overview" | "compete" | "toggles" | "preview" | "content" | "audit";
+type Tab = "overview" | "compete" | "toggles" | "preview" | "content" | "audit" | "stack";
 
 export default function SiteCard({
   site,
@@ -130,6 +130,7 @@ export default function SiteCard({
     { id: "toggles", label: "Toggles" },
     { id: "content", label: "Content" },
     { id: "audit", label: "Audit", badge: errorCount + warnCount },
+    { id: "stack", label: "Stack" },
     { id: "preview", label: "Preview" },
   ];
 
@@ -388,6 +389,22 @@ export default function SiteCard({
                 <span>{item.label}</span>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* ── STACK ── */}
+        {tab === "stack" && (
+          <div className="flex flex-col gap-2">
+            {site.stack && site.stack.length > 0 ? (
+              site.stack.map((item, i) => (
+                <div key={i} className="flex items-start gap-2 py-1.5 border-b border-white/[0.05] last:border-0">
+                  <span className="text-xs text-zinc-500 w-28 shrink-0 pt-0.5">{item.label}</span>
+                  <span className="text-xs text-zinc-200 font-medium leading-relaxed">{item.value}</span>
+                </div>
+              ))
+            ) : (
+              <p className="text-zinc-600 text-xs text-center py-4">No stack data yet.</p>
+            )}
           </div>
         )}
 
