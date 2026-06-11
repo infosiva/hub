@@ -1,30 +1,31 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { SITES } from "@/lib/sites";
 
 // Default themes per site — research-recommended colour families
 const SITE_DEFAULTS: Record<string, SiteTheme> = {
-  speakiq:      { background: "#03080f", primary: "#06b6d4", secondary: "#22d3ee", texture: "aurora",  widgets: {} },
-  roamplan:     { background: "#020b0a", primary: "#10b981", secondary: "#6ee7b7", texture: "aurora",  widgets: {} },
-  trackwealth:  { background: "#04060a", primary: "#f59e0b", secondary: "#fbbf24", texture: "mesh",    widgets: {} },
-  kwizzo:       { background: "#0a0412", primary: "#a855f7", secondary: "#d946ef", texture: "aurora",  widgets: {} },
-  resumevault:  { background: "#03050e", primary: "#3b82f6", secondary: "#60a5fa", texture: "dotgrid", widgets: {} },
-  pdfideas:     { background: "#08050f", primary: "#8b5cf6", secondary: "#a78bfa", texture: "mesh",    widgets: {} },
-  pixelforge:   { background: "#04000d", primary: "#ec4899", secondary: "#f472b6", texture: "aurora",  widgets: {} },
-  aicoachlab:   { background: "#040c06", primary: "#22c55e", secondary: "#4ade80", texture: "mesh",    widgets: {} },
-  neuralos:     { background: "#02050f", primary: "#6366f1", secondary: "#818cf8", texture: "dotgrid", widgets: {} },
-  myvitals:     { background: "#030d12", primary: "#0ea5e9", secondary: "#38bdf8", texture: "flat",    widgets: {} },
-  tutiq:        { background: "#04040f", primary: "#6366f1", secondary: "#818cf8", texture: "aurora",  widgets: {} },
-  quizbites:    { background: "#08010d", primary: "#ec4899", secondary: "#f472b6", texture: "aurora",  widgets: {} },
-  worldtrends:  { background: "#0f0905", primary: "#D97757", secondary: "#fb923c", texture: "mesh",    widgets: {} },
-  firstline:    { background: "#030810", primary: "#2D7EFF", secondary: "#60a5fa", texture: "dotgrid", widgets: {} },
-  agenttrace:   { background: "#01090d", primary: "#06b6d4", secondary: "#22d3ee", texture: "dotgrid", widgets: {} },
-  draftcal:     { background: "#fafaf8", primary: "#f97316", secondary: "#fb923c", texture: "flat",    widgets: {} },
-  invoicemint:  { background: "#040602", primary: "#f59e0b", secondary: "#fbbf24", texture: "flat",    widgets: {} },
-  flightbrain:  { background: "#01060f", primary: "#3b82f6", secondary: "#60a5fa", texture: "aurora",  widgets: {} },
-  zerostaff:    { background: "#03060a", primary: "#6366f1", secondary: "#818cf8", texture: "mesh",    widgets: {} },
-  mandirates:   { background: "#fafdf7", primary: "#84cc16", secondary: "#a3e635", texture: "flat",    widgets: {} },
+  speakiq:      { background: "#03080f", primary: "#06b6d4", secondary: "#22d3ee", texture: "aurora",  widgets: {}, layout: {}, copy: {}, font: {} },
+  roamplan:     { background: "#020b0a", primary: "#10b981", secondary: "#6ee7b7", texture: "aurora",  widgets: {}, layout: {}, copy: {}, font: {} },
+  trackwealth:  { background: "#04060a", primary: "#f59e0b", secondary: "#fbbf24", texture: "mesh",    widgets: {}, layout: {}, copy: {}, font: {} },
+  kwizzo:       { background: "#0a0412", primary: "#a855f7", secondary: "#d946ef", texture: "aurora",  widgets: {}, layout: {}, copy: {}, font: {} },
+  resumevault:  { background: "#03050e", primary: "#3b82f6", secondary: "#60a5fa", texture: "dotgrid", widgets: {}, layout: {}, copy: {}, font: {} },
+  pdfideas:     { background: "#08050f", primary: "#8b5cf6", secondary: "#a78bfa", texture: "mesh",    widgets: {}, layout: {}, copy: {}, font: {} },
+  pixelforge:   { background: "#04000d", primary: "#ec4899", secondary: "#f472b6", texture: "aurora",  widgets: {}, layout: {}, copy: {}, font: {} },
+  aicoachlab:   { background: "#040c06", primary: "#22c55e", secondary: "#4ade80", texture: "mesh",    widgets: {}, layout: {}, copy: {}, font: {} },
+  neuralos:     { background: "#02050f", primary: "#6366f1", secondary: "#818cf8", texture: "dotgrid", widgets: {}, layout: {}, copy: {}, font: {} },
+  myvitals:     { background: "#030d12", primary: "#0ea5e9", secondary: "#38bdf8", texture: "flat",    widgets: {}, layout: {}, copy: {}, font: {} },
+  tutiq:        { background: "#04040f", primary: "#6366f1", secondary: "#818cf8", texture: "aurora",  widgets: {}, layout: {}, copy: {}, font: {} },
+  quizbites:    { background: "#08010d", primary: "#ec4899", secondary: "#f472b6", texture: "aurora",  widgets: {}, layout: {}, copy: {}, font: {} },
+  worldtrends:  { background: "#0f0905", primary: "#D97757", secondary: "#fb923c", texture: "mesh",    widgets: {}, layout: {}, copy: {}, font: {} },
+  firstline:    { background: "#030810", primary: "#2D7EFF", secondary: "#60a5fa", texture: "dotgrid", widgets: {}, layout: {}, copy: {}, font: {} },
+  agenttrace:   { background: "#01090d", primary: "#06b6d4", secondary: "#22d3ee", texture: "dotgrid", widgets: {}, layout: {}, copy: {}, font: {} },
+  draftcal:     { background: "#fafaf8", primary: "#f97316", secondary: "#fb923c", texture: "flat",    widgets: {}, layout: {}, copy: {}, font: {} },
+  invoicemint:  { background: "#040602", primary: "#f59e0b", secondary: "#fbbf24", texture: "flat",    widgets: {}, layout: {}, copy: {}, font: {} },
+  flightbrain:  { background: "#01060f", primary: "#3b82f6", secondary: "#60a5fa", texture: "aurora",  widgets: {}, layout: {}, copy: {}, font: {} },
+  zerostaff:    { background: "#03060a", primary: "#6366f1", secondary: "#818cf8", texture: "mesh",    widgets: {}, layout: {}, copy: {}, font: {} },
+  mandirates:   { background: "#fafdf7", primary: "#84cc16", secondary: "#a3e635", texture: "flat",    widgets: {}, layout: {}, copy: {}, font: {} },
+  billslash:    { background: "#0b1120", primary: "#10b981", secondary: "#34d399", texture: "mesh",    widgets: {}, layout: {}, copy: {}, font: {} },
 };
 
 const TEXTURES = [
@@ -34,11 +35,31 @@ const TEXTURES = [
   { value: "flat",    label: "Clean flat" },
 ];
 
+const HERO_VARIANTS = [
+  { value: "split",    label: "Split (left+right)" },
+  { value: "centered", label: "Centered" },
+  { value: "minimal",  label: "Minimal" },
+];
+
 const WIDGET_KEYS = [
-  { key: "chatbot",   label: "Chatbot FAB" },
-  { key: "usagePill", label: "Usage counter pill" },
-  { key: "streak",    label: "Streak tracker" },
-  { key: "banner",    label: "Top banner" },
+  { key: "chatbot",         label: "Chatbot FAB" },
+  { key: "usagePill",       label: "Usage counter pill" },
+  { key: "streak",          label: "Streak tracker" },
+  { key: "banner",          label: "Top banner" },
+  { key: "stickyFooterCTA", label: "Sticky footer CTA" },
+  { key: "backToTop",       label: "Back to top button" },
+  { key: "pageStats",       label: "Page stats tracker" },
+  { key: "cookieConsent",   label: "Cookie consent" },
+];
+
+const SECTION_IDS = [
+  "hero", "speakStats", "marquee", "howItWorks", "features",
+  "pricing", "faq", "finalCta", "stats", "demo", "testimonials",
+];
+
+const FONT_OPTIONS = [
+  "Inter", "DM Sans", "Nunito", "Space Grotesk", "Plus Jakarta Sans",
+  "Outfit", "Manrope", "Geist", "Bricolage Grotesque",
 ];
 
 interface SiteTheme {
@@ -47,6 +68,20 @@ interface SiteTheme {
   secondary: string;
   texture: string;
   widgets: Record<string, boolean>;
+  layout: {
+    hideSections?: string[];
+    heroVariant?: string;
+  };
+  copy: {
+    headline?: string;
+    subheadline?: string;
+    ctaPrimary?: string;
+    badge?: string;
+  };
+  font: {
+    heading?: string;
+    body?: string;
+  };
 }
 
 function getDefault(siteId: string): SiteTheme {
@@ -56,6 +91,9 @@ function getDefault(siteId: string): SiteTheme {
     secondary: "#a78bfa",
     texture: "aurora",
     widgets: {},
+    layout: {},
+    copy: {},
+    font: {},
   };
 }
 
@@ -67,6 +105,7 @@ export default function ThemesPage() {
   const [removing, setRemoving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<"colors" | "widgets" | "layout" | "copy" | "font">("colors");
 
   useEffect(() => {
     fetch("/api/themes")
@@ -78,9 +117,16 @@ export default function ThemesPage() {
       .catch(() => setLoading(false));
   }, []);
 
-  const current = themes[selected] ?? getDefault(selected);
+  const current: SiteTheme = {
+    ...getDefault(selected),
+    ...themes[selected],
+    widgets: { ...(getDefault(selected).widgets ?? {}), ...(themes[selected]?.widgets ?? {}) },
+    layout:  { ...(getDefault(selected).layout  ?? {}), ...(themes[selected]?.layout  ?? {}) },
+    copy:    { ...(getDefault(selected).copy    ?? {}), ...(themes[selected]?.copy    ?? {}) },
+    font:    { ...(getDefault(selected).font    ?? {}), ...(themes[selected]?.font    ?? {}) },
+  };
 
-  function setField(field: keyof Omit<SiteTheme, "widgets">, value: string) {
+  function setField(field: "background" | "primary" | "secondary" | "texture", value: string) {
     setThemes((prev) => ({
       ...prev,
       [selected]: { ...getDefault(selected), ...prev[selected], [field]: value },
@@ -90,13 +136,51 @@ export default function ThemesPage() {
 
   function setWidget(key: string, value: boolean) {
     setThemes((prev) => {
-      const existing = prev[selected] ?? getDefault(selected);
+      const existing = { ...getDefault(selected), ...prev[selected] };
       return {
         ...prev,
-        [selected]: {
-          ...existing,
-          widgets: { ...existing.widgets, [key]: value },
-        },
+        [selected]: { ...existing, widgets: { ...existing.widgets, [key]: value } },
+      };
+    });
+    setSaved(false);
+  }
+
+  function setLayoutField(key: string, value: unknown) {
+    setThemes((prev) => {
+      const existing = { ...getDefault(selected), ...prev[selected] };
+      return {
+        ...prev,
+        [selected]: { ...existing, layout: { ...existing.layout, [key]: value } },
+      };
+    });
+    setSaved(false);
+  }
+
+  function toggleHideSection(sectionId: string, hide: boolean) {
+    const current = themes[selected]?.layout?.hideSections ?? [];
+    const next = hide
+      ? [...new Set([...current, sectionId])]
+      : current.filter((s) => s !== sectionId);
+    setLayoutField("hideSections", next);
+  }
+
+  function setCopyField(key: string, value: string) {
+    setThemes((prev) => {
+      const existing = { ...getDefault(selected), ...prev[selected] };
+      return {
+        ...prev,
+        [selected]: { ...existing, copy: { ...existing.copy, [key]: value } },
+      };
+    });
+    setSaved(false);
+  }
+
+  function setFontField(key: "heading" | "body", value: string) {
+    setThemes((prev) => {
+      const existing = { ...getDefault(selected), ...prev[selected] };
+      return {
+        ...prev,
+        [selected]: { ...existing, font: { ...existing.font, [key]: value } },
       };
     });
     setSaved(false);
@@ -114,8 +198,8 @@ export default function ThemesPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setSaved(true);
-    } catch (e: any) {
-      setError(e.message);
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : String(e));
     } finally {
       setSaving(false);
     }
@@ -128,21 +212,29 @@ export default function ThemesPage() {
       const res = await fetch(`/api/themes?siteId=${selected}`, { method: "DELETE" });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      // Remove from local state — will fall back to defaults
       setThemes((prev) => {
         const next = { ...prev };
         delete next[selected];
         return next;
       });
       setSaved(false);
-    } catch (e: any) {
-      setError(e.message);
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : String(e));
     } finally {
       setRemoving(false);
     }
   }
 
   const site = SITES.find((s) => s.id === selected);
+  const hideSections = current.layout?.hideSections ?? [];
+
+  const TABS = [
+    { id: "colors",  label: "Colors" },
+    { id: "widgets", label: "Widgets" },
+    { id: "layout",  label: "Layout" },
+    { id: "copy",    label: "Copy" },
+    { id: "font",    label: "Fonts" },
+  ] as const;
 
   return (
     <div className="min-h-screen bg-[#07060f] text-white p-6">
@@ -152,7 +244,9 @@ export default function ThemesPage() {
           <div>
             <a href="/" className="text-white/40 text-sm hover:text-white/70 transition-colors">← Dashboard</a>
             <h1 className="text-2xl font-bold tracking-tight mt-1">Theme Editor</h1>
-            <p className="text-white/50 text-sm mt-0.5">Tune any site's colours without deploying. Saved to Edge Config, applied live.</p>
+            <p className="text-white/50 text-sm mt-0.5">
+              Colors · Widgets · Layout · Copy · Fonts — all live via Edge Config, no deploy needed.
+            </p>
           </div>
           <div className="text-xs text-white/30 bg-white/5 rounded-lg px-3 py-2">
             Password: <span className="text-white/60 font-mono">siva2026</span>
@@ -171,7 +265,7 @@ export default function ThemesPage() {
                 return (
                   <button
                     key={s.id}
-                    onClick={() => { setSelected(s.id); setSaved(false); setError(null); }}
+                    onClick={() => { setSelected(s.id); setSaved(false); setError(null); setActiveTab("colors"); }}
                     className={`w-full text-left px-4 py-3 flex items-center gap-3 transition-colors border-b border-white/[0.04] last:border-0 ${
                       selected === s.id
                         ? "bg-violet-600/20 text-white"
@@ -214,118 +308,218 @@ export default function ThemesPage() {
               )}
             </div>
 
-            {/* Colours */}
-            <div className="bg-white/[0.04] border border-white/[0.08] rounded-xl p-5">
-              <h3 className="text-sm font-semibold text-white/70 mb-4">Colours</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                <ColorPicker
-                  label="Background"
-                  value={current.background}
-                  onChange={(v) => setField("background", v)}
-                />
-                <ColorPicker
-                  label="Primary accent"
-                  value={current.primary}
-                  onChange={(v) => setField("primary", v)}
-                />
-                <ColorPicker
-                  label="Secondary accent"
-                  value={current.secondary}
-                  onChange={(v) => setField("secondary", v)}
-                />
-              </div>
+            {/* Tab bar */}
+            <div className="flex gap-1 bg-white/[0.03] border border-white/[0.06] rounded-xl p-1">
+              {TABS.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
+                    activeTab === tab.id
+                      ? "bg-violet-600 text-white"
+                      : "text-white/50 hover:text-white/80 hover:bg-white/[0.04]"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
             </div>
 
-            {/* Live preview strip */}
-            <div
-              className="rounded-xl p-5 border border-white/10 transition-all duration-300"
-              style={{ background: current.background }}
-            >
-              <h3 className="text-xs font-semibold text-white/50 mb-3 uppercase tracking-widest">Preview</h3>
-              <div className="flex gap-3 flex-wrap">
-                <div
-                  className="rounded-lg px-4 py-2 text-sm font-medium text-white"
-                  style={{ background: current.primary }}
-                >
-                  Primary button
+            {/* Colors tab */}
+            {activeTab === "colors" && (
+              <>
+                <div className="bg-white/[0.04] border border-white/[0.08] rounded-xl p-5">
+                  <h3 className="text-sm font-semibold text-white/70 mb-4">Colours</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                    <ColorPicker label="Background" value={current.background} onChange={(v) => setField("background", v)} />
+                    <ColorPicker label="Primary accent" value={current.primary} onChange={(v) => setField("primary", v)} />
+                    <ColorPicker label="Secondary accent" value={current.secondary} onChange={(v) => setField("secondary", v)} />
+                  </div>
                 </div>
-                <div
-                  className="rounded-lg px-4 py-2 text-sm font-medium text-white"
-                  style={{ background: current.secondary }}
-                >
-                  Secondary
-                </div>
-                <div
-                  className="rounded-lg px-4 py-2 text-sm border"
-                  style={{
-                    borderColor: current.primary + "44",
-                    color: current.primary,
-                    background: current.primary + "15",
-                  }}
-                >
-                  Glass chip
-                </div>
-                <div
-                  className="w-8 h-8 rounded-full"
-                  style={{
-                    boxShadow: `0 0 20px 4px ${current.primary}66`,
-                    background: current.primary,
-                  }}
-                />
-              </div>
-              <p className="text-xs mt-3" style={{ color: current.primary + "aa" }}>
-                Accent text — headings, links, highlights
-              </p>
-            </div>
 
-            {/* Background texture */}
-            <div className="bg-white/[0.04] border border-white/[0.08] rounded-xl p-5">
-              <h3 className="text-sm font-semibold text-white/70 mb-3">Background texture</h3>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {TEXTURES.map((t) => (
-                  <button
-                    key={t.value}
-                    onClick={() => setField("texture", t.value)}
-                    className={`px-3 py-2.5 rounded-lg text-sm border transition-colors ${
-                      current.texture === t.value
-                        ? "bg-violet-600/30 border-violet-500/50 text-white"
-                        : "border-white/10 text-white/60 hover:border-white/20 hover:text-white/80"
-                    }`}
-                  >
-                    {t.label}
-                  </button>
+                {/* Live preview strip */}
+                <div
+                  className="rounded-xl p-5 border border-white/10 transition-all duration-300"
+                  style={{ background: current.background }}
+                >
+                  <h3 className="text-xs font-semibold text-white/50 mb-3 uppercase tracking-widest">Preview</h3>
+                  <div className="flex gap-3 flex-wrap">
+                    <div className="rounded-lg px-4 py-2 text-sm font-medium text-white" style={{ background: current.primary }}>
+                      Primary button
+                    </div>
+                    <div className="rounded-lg px-4 py-2 text-sm font-medium text-white" style={{ background: current.secondary }}>
+                      Secondary
+                    </div>
+                    <div
+                      className="rounded-lg px-4 py-2 text-sm border"
+                      style={{ borderColor: current.primary + "44", color: current.primary, background: current.primary + "15" }}
+                    >
+                      Glass chip
+                    </div>
+                    <div
+                      className="w-8 h-8 rounded-full"
+                      style={{ boxShadow: `0 0 20px 4px ${current.primary}66`, background: current.primary }}
+                    />
+                  </div>
+                  <p className="text-xs mt-3" style={{ color: current.primary + "aa" }}>
+                    Accent text — headings, links, highlights
+                  </p>
+                </div>
+
+                {/* Background texture */}
+                <div className="bg-white/[0.04] border border-white/[0.08] rounded-xl p-5">
+                  <h3 className="text-sm font-semibold text-white/70 mb-3">Background texture</h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {TEXTURES.map((t) => (
+                      <button
+                        key={t.value}
+                        onClick={() => setField("texture", t.value)}
+                        className={`px-3 py-2.5 rounded-lg text-sm border transition-colors ${
+                          current.texture === t.value
+                            ? "bg-violet-600/30 border-violet-500/50 text-white"
+                            : "border-white/10 text-white/60 hover:border-white/20 hover:text-white/80"
+                        }`}
+                      >
+                        {t.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Widgets tab */}
+            {activeTab === "widgets" && (
+              <div className="bg-white/[0.04] border border-white/[0.08] rounded-xl p-5">
+                <h3 className="text-sm font-semibold text-white/70 mb-1">Widget visibility</h3>
+                <p className="text-xs text-white/40 mb-4">Toggle widgets shown on this site. Site reads from Edge Config on each request.</p>
+                <div className="space-y-3">
+                  {WIDGET_KEYS.map(({ key, label }) => {
+                    const isOn = current.widgets[key] !== false;
+                    return (
+                      <div key={key} className="flex items-center justify-between py-1">
+                        <span className="text-sm text-white/80">{label}</span>
+                        <button
+                          onClick={() => setWidget(key, !isOn)}
+                          className={`relative w-11 h-6 rounded-full transition-colors ${isOn ? "bg-violet-600" : "bg-white/10"}`}
+                          title={isOn ? "Shown — click to hide" : "Hidden — click to show"}
+                        >
+                          <span className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${isOn ? "translate-x-5" : "translate-x-0"}`} />
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Layout tab */}
+            {activeTab === "layout" && (
+              <>
+                <div className="bg-white/[0.04] border border-white/[0.08] rounded-xl p-5">
+                  <h3 className="text-sm font-semibold text-white/70 mb-3">Hero variant</h3>
+                  <div className="grid grid-cols-3 gap-2">
+                    {HERO_VARIANTS.map((v) => (
+                      <button
+                        key={v.value}
+                        onClick={() => setLayoutField("heroVariant", v.value)}
+                        className={`px-3 py-2.5 rounded-lg text-sm border transition-colors ${
+                          (current.layout?.heroVariant ?? "split") === v.value
+                            ? "bg-violet-600/30 border-violet-500/50 text-white"
+                            : "border-white/10 text-white/60 hover:border-white/20 hover:text-white/80"
+                        }`}
+                      >
+                        {v.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="bg-white/[0.04] border border-white/[0.08] rounded-xl p-5">
+                  <h3 className="text-sm font-semibold text-white/70 mb-1">Hide sections</h3>
+                  <p className="text-xs text-white/40 mb-4">Hidden sections are skipped when building the page.</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {SECTION_IDS.map((id) => {
+                      const isHidden = hideSections.includes(id);
+                      return (
+                        <button
+                          key={id}
+                          onClick={() => toggleHideSection(id, !isHidden)}
+                          className={`px-3 py-2 rounded-lg text-sm border transition-colors text-left ${
+                            isHidden
+                              ? "bg-red-500/15 border-red-500/40 text-red-300"
+                              : "border-white/10 text-white/60 hover:border-white/20"
+                          }`}
+                        >
+                          {isHidden ? "⊘ " : ""}{id}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Copy tab */}
+            {activeTab === "copy" && (
+              <div className="bg-white/[0.04] border border-white/[0.08] rounded-xl p-5 space-y-4">
+                <h3 className="text-sm font-semibold text-white/70">Copy overrides</h3>
+                <p className="text-xs text-white/40">Override hero text without redeploying. Leave blank to use the site's own copy.</p>
+                {[
+                  { key: "badge",       label: "Hero badge",          placeholder: "e.g. Free · No sign-up · AI-powered" },
+                  { key: "headline",    label: "Hero headline",        placeholder: "e.g. Negotiate your bills in minutes" },
+                  { key: "subheadline", label: "Subheadline",          placeholder: "e.g. AI-generated word-for-word scripts..." },
+                  { key: "ctaPrimary",  label: "Primary CTA text",     placeholder: "e.g. Start Free →" },
+                ].map(({ key, label, placeholder }) => (
+                  <div key={key}>
+                    <label className="text-xs text-white/50 block mb-1.5">{label}</label>
+                    <input
+                      type="text"
+                      value={(current.copy as Record<string, string>)[key] ?? ""}
+                      onChange={(e) => setCopyField(key, e.target.value)}
+                      placeholder={placeholder}
+                      className="w-full bg-white/5 border border-white/10 text-white text-sm rounded-lg px-3 py-2.5 outline-none focus:border-violet-500 transition-colors placeholder:text-white/20"
+                    />
+                  </div>
                 ))}
               </div>
-            </div>
+            )}
 
-            {/* Widget visibility */}
-            <div className="bg-white/[0.04] border border-white/[0.08] rounded-xl p-5">
-              <h3 className="text-sm font-semibold text-white/70 mb-1">Widget visibility</h3>
-              <p className="text-xs text-white/40 mb-4">Hide widgets you don't want on this site. Site reads this from Edge Config.</p>
-              <div className="space-y-3">
-                {WIDGET_KEYS.map(({ key, label }) => {
-                  const isOn = current.widgets[key] !== false; // default shown
-                  return (
-                    <div key={key} className="flex items-center justify-between">
-                      <span className="text-sm text-white/80">{label}</span>
-                      <button
-                        onClick={() => setWidget(key, !isOn)}
-                        className={`relative w-11 h-6 rounded-full transition-colors ${
-                          isOn ? "bg-violet-600" : "bg-white/10"
-                        }`}
-                        title={isOn ? "Shown — click to hide" : "Hidden — click to show"}
-                      >
-                        <span
-                          className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
-                            isOn ? "translate-x-5" : "translate-x-0"
+            {/* Font tab */}
+            {activeTab === "font" && (
+              <div className="bg-white/[0.04] border border-white/[0.08] rounded-xl p-5 space-y-5">
+                <h3 className="text-sm font-semibold text-white/70">Font overrides</h3>
+                <p className="text-xs text-white/40">Override heading and body font. Font must be available from Google Fonts or system stack.</p>
+                {(["heading", "body"] as const).map((type) => (
+                  <div key={type}>
+                    <label className="text-xs text-white/50 block mb-2 capitalize">{type} font</label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-2">
+                      {FONT_OPTIONS.map((f) => (
+                        <button
+                          key={f}
+                          onClick={() => setFontField(type, current.font[type] === f ? "" : f)}
+                          className={`px-3 py-2 rounded-lg text-sm border transition-colors ${
+                            current.font[type] === f
+                              ? "bg-violet-600/30 border-violet-500/50 text-white"
+                              : "border-white/10 text-white/60 hover:border-white/20"
                           }`}
-                        />
-                      </button>
+                          style={{ fontFamily: `'${f}', sans-serif` }}
+                        >
+                          {f}
+                        </button>
+                      ))}
                     </div>
-                  );
-                })}
+                    <input
+                      type="text"
+                      value={current.font[type] ?? ""}
+                      onChange={(e) => setFontField(type, e.target.value)}
+                      placeholder="Or type a custom font name"
+                      className="w-full bg-white/5 border border-white/10 text-white text-sm rounded-lg px-3 py-2 outline-none focus:border-violet-500 transition-colors placeholder:text-white/20"
+                    />
+                  </div>
+                ))}
               </div>
-            </div>
+            )}
 
             {/* Actions */}
             <div className="flex items-center gap-3">
@@ -355,10 +549,10 @@ export default function ThemesPage() {
             {/* How to use */}
             <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5 text-xs text-white/40 space-y-1">
               <p className="font-semibold text-white/60 mb-2">How it works</p>
-              <p>1. Pick a site, adjust colours + texture + widget visibility.</p>
-              <p>2. Click <strong className="text-white/60">Save theme</strong> — writes <code className="bg-white/10 px-1 rounded">theme_{"{siteId}"}</code> key to Edge Config.</p>
-              <p>3. Site reads Edge Config at request time and injects CSS vars — no deploy needed.</p>
-              <p>4. Click <strong className="text-white/60">Remove override</strong> to delete the key — site reverts to its code defaults.</p>
+              <p>1. Pick site, adjust any tab (Colors / Widgets / Layout / Copy / Fonts).</p>
+              <p>2. Click <strong className="text-white/60">Save theme</strong> — writes <code className="bg-white/10 px-1 rounded">theme_{"{siteId}"}</code> to Edge Config.</p>
+              <p>3. Site reads Edge Config at request time, injects CSS vars + widget/section state — no deploy needed.</p>
+              <p>4. <strong className="text-white/60">Remove override</strong> → site reverts to its code defaults.</p>
               <p className="mt-2">Green dot in site list = custom theme active.</p>
             </div>
           </div>
@@ -368,15 +562,7 @@ export default function ThemesPage() {
   );
 }
 
-function ColorPicker({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-}) {
+function ColorPicker({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
   return (
     <div>
       <label className="text-xs text-white/50 block mb-2">{label}</label>
@@ -392,19 +578,13 @@ function ColorPicker({
         <input
           type="text"
           value={value}
-          onChange={(e) => {
-            const v = e.target.value;
-            if (/^#[0-9a-fA-F]{0,6}$/.test(v)) onChange(v);
-          }}
+          onChange={(e) => { const v = e.target.value; if (/^#[0-9a-fA-F]{0,6}$/.test(v)) onChange(v); }}
           className="flex-1 bg-white/5 border border-white/10 text-white font-mono text-sm rounded-lg px-3 py-2 outline-none focus:border-violet-500 transition-colors"
           maxLength={7}
           spellCheck={false}
         />
       </div>
-      <div
-        className="mt-2 h-6 rounded-md border border-white/10 transition-all"
-        style={{ background: value }}
-      />
+      <div className="mt-2 h-6 rounded-md border border-white/10 transition-all" style={{ background: value }} />
     </div>
   );
 }
