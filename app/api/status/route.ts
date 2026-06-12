@@ -20,20 +20,27 @@ export async function GET() {
           status: res.ok || res.status < 400 ? "up" : "down",
           statusCode: res.status,
           latency,
+          errorType: res.ok || res.status < 400 ? null : `HTTP_${res.status}`,
         };
-      } catch {
+      } catch (e: unknown) {
+        const msg = e instanceof Error ? e.message : String(e);
+        const errorType = msg.includes("ENOTFOUND") ? "DNS_FAIL"
+          : msg.includes("EPROTO") || msg.includes("SSL") ? "SSL_ERR"
+          : msg.includes("abort") || msg.includes("timeout") ? "TIMEOUT"
+          : "UNREACHABLE";
         return {
           id: site.id,
           status: "down",
           statusCode: 0,
           latency: Date.now() - start,
+          errorType,
         };
       }
     })
   );
 
   const data = results.map((r) =>
-    r.status === "fulfilled" ? r.value : { id: "unknown", status: "down", statusCode: 0, latency: 0 }
+    r.status === "fulfilled" ? r.value : { id: "unknown", status: "down", statusCode: 0, latency: 0, errorType: "CHECK_FAILED" }
   );
 
   return NextResponse.json({ checked: new Date().toISOString(), sites: data });

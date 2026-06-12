@@ -45,7 +45,7 @@ export default function SiteCard({
   healthIssues,
 }: {
   site: Site;
-  statusInfo: { status: SiteStatus; latency: number; statusCode: number };
+  statusInfo: { status: SiteStatus; latency: number; statusCode: number; errorType?: string | null };
   analytics: { visitors: number; pageviews: number };
   healthIssues?: { type: string; severity: string; message: string }[];
 }) {
@@ -60,7 +60,7 @@ export default function SiteCard({
   const [savingContent, setSavingContent] = useState<string | null>(null);
   const [contentSaved, setContentSaved] = useState<Record<string, boolean>>({});
 
-  const { status, latency } = statusInfo;
+  const { status, latency, errorType } = statusInfo;
   const accent = site.accentColor ?? "#a78bfa";
   const highTips = site.tips.filter((t) => t.priority === "high");
   const medTips = site.tips.filter((t) => t.priority === "medium");
@@ -170,6 +170,11 @@ export default function SiteCard({
             >
               {status}
             </span>
+            {status === "down" && errorType && (
+              <span className="text-[9px] bg-red-500/15 text-red-400 border border-red-500/20 px-1 py-0.5 rounded font-mono uppercase">
+                {errorType}
+              </span>
+            )}
           </div>
           {status !== "unknown" && (
             <div className="flex items-center gap-1.5">
