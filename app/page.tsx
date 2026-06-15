@@ -4,6 +4,7 @@ import ProvidersPanel from "@/components/ProvidersPanel";
 import GlobalContentPanel from "@/components/GlobalContentPanel";
 import GlobalFlagsPanel from "@/components/GlobalFlagsPanel";
 import DownSiteAlert from "@/components/DownSiteAlert";
+import AnalyticsDashboard from "@/components/AnalyticsDashboard";
 
 interface HealthIssue {
   type: string;
@@ -175,6 +176,9 @@ export default async function DashboardPage() {
       <HealthScore statusMap={statusMap} />
       <DownSiteAlert downNames={downNames} />
       <SummaryBar statusMap={statusMap} analyticsMap={analyticsMap} healthMap={healthMap} />
+
+      {/* Filterable analytics dashboard */}
+      <AnalyticsDashboard />
 
       {/* Global Content Override */}
       <GlobalFlagsPanel />
