@@ -8,5 +8,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 1,
     },
+    {
+      url: 'https://ai-products-hub.vercel.app/portfolio',
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 1,
+    },
   ]
 }
