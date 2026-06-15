@@ -156,12 +156,20 @@ export default async function DashboardPage() {
             {SITES.length} products · feature toggles · AI providers · live health audit
           </p>
         </div>
-        <a
-          href="/"
-          className="text-zinc-400 hover:text-white text-sm border border-white/10 rounded-lg px-3 py-1.5 transition-colors"
-        >
-          ↺ Refresh
-        </a>
+        <div className="flex items-center gap-2">
+          <a
+            href="/portfolio"
+            className="text-zinc-400 hover:text-white text-sm border border-white/10 rounded-lg px-3 py-1.5 transition-colors"
+          >
+            🌐 Public Portfolio
+          </a>
+          <a
+            href="/"
+            className="text-zinc-400 hover:text-white text-sm border border-white/10 rounded-lg px-3 py-1.5 transition-colors"
+          >
+            ↺ Refresh
+          </a>
+        </div>
       </div>
 
       <HealthScore statusMap={statusMap} />

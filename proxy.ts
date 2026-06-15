@@ -6,8 +6,13 @@ const COOKIE = "hub_auth";
 export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // allow api routes and login page through
-  if (pathname.startsWith("/api/") || pathname === "/login") {
+  // allow api routes, login, public portfolio, and sitemap through
+  if (
+    pathname.startsWith("/api/") ||
+    pathname === "/login" ||
+    pathname === "/portfolio" ||
+    pathname === "/sitemap.xml"
+  ) {
     return NextResponse.next();
   }
 
