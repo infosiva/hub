@@ -147,7 +147,7 @@ export default async function DashboardPage() {
   const downNames = SITES.filter((s) => statusMap[s.id]?.status === "down").map((s) => s.name);
 
   return (
-    <main className="min-h-screen bg-[#07060f] px-4 py-8 max-w-7xl mx-auto">
+    <main className="min-h-screen bg-[#0b1120] px-4 py-8 max-w-7xl mx-auto">
       {/* header */}
       <div className="flex items-center justify-between mb-6">
         <div>

@@ -49,10 +49,9 @@ export const SITES: Site[] = [
     emoji: "📖",
     category: "Education",
     tagline: "AI-powered tutoring for K-12 students",
-    accentColor: "#6366f1",
+    accentColor: "#0284c7",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Add subject landing pages for SEO", priority: "high" },
       { label: "Show sample lesson before sign-up (freemium gate)", priority: "high" },
       { label: "Add streak / progress tracker visible on homepage", priority: "medium" },
@@ -88,7 +87,6 @@ export const SITES: Site[] = [
     accentColor: "#f59e0b",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Add shareable quiz result card (viral loop)", priority: "high" },
       { label: "Family leaderboard visible without login", priority: "high" },
       { label: "Weekly family quiz email digest", priority: "medium" },
@@ -121,10 +119,9 @@ export const SITES: Site[] = [
     emoji: "⚡",
     category: "Education",
     tagline: "Quick-fire quizzes for curious minds",
-    accentColor: "#ec4899",
+    accentColor: "#0284c7",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Live classroom join code on homepage", priority: "high" },
       { label: "Teacher dashboard demo video", priority: "medium" },
       { label: "Export results as PDF for teachers", priority: "low" },
@@ -158,7 +155,6 @@ export const SITES: Site[] = [
     accentColor: "#10b981",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Daily email quiz subscription", priority: "high" },
       { label: "Shareable score card for Twitter/X", priority: "high" },
       { label: "Category landing pages (Python, AI, etc)", priority: "medium" },
@@ -193,7 +189,6 @@ export const SITES: Site[] = [
     accentColor: "#8b5cf6",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Show language flags + progress on homepage", priority: "high" },
       { label: "Free 5-min demo conversation, no login", priority: "high" },
       { label: "Daily streak notification (push or email)", priority: "medium" },
@@ -227,10 +222,9 @@ export const SITES: Site[] = [
     emoji: "📈",
     category: "Finance",
     tagline: "AI wealth tracker — know where you stand",
-    accentColor: "#22c55e",
+    accentColor: "#059669",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Demo portfolio visible without login", priority: "high" },
       { label: "Market overview widget on homepage", priority: "medium" },
       { label: "Weekly portfolio digest email", priority: "medium" },
@@ -265,7 +259,6 @@ export const SITES: Site[] = [
     accentColor: "#f59e0b",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Generate invoice without sign-up (hook)", priority: "high" },
       { label: "Download as PDF on first use", priority: "high" },
       { label: "Client portal link on invoice", priority: "medium" },
@@ -302,7 +295,6 @@ export const SITES: Site[] = [
     accentColor: "#0ea5e9",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Generate sample itinerary on homepage (no auth)", priority: "high" },
       { label: "Share itinerary as public link", priority: "high" },
       { label: "Destination inspiration gallery", priority: "low" },
@@ -336,7 +328,6 @@ export const SITES: Site[] = [
     accentColor: "#3b82f6",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Live flight search on homepage hero", priority: "high" },
       { label: "Flight delay prediction badge", priority: "medium" },
       { label: "Price alert email signup", priority: "medium" },
@@ -368,10 +359,9 @@ export const SITES: Site[] = [
     emoji: "📄",
     category: "Career",
     tagline: "ATS-optimised resumes built by AI in 60s",
-    accentColor: "#6366f1",
+    accentColor: "#7c3aed",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Show resume output preview before sign-up", priority: "high" },
       { label: "ATS score badge on generated resumes", priority: "high" },
       { label: "Job-specific resume tailoring feature", priority: "medium" },
@@ -405,7 +395,6 @@ export const SITES: Site[] = [
     accentColor: "#0ea5e9",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Daily job alert email subscription", priority: "high" },
       { label: "Salary range filter + display", priority: "high" },
       { label: "Remote-only toggle on homepage", priority: "medium" },
@@ -437,10 +426,9 @@ export const SITES: Site[] = [
     emoji: "📅",
     category: "Social",
     tagline: "30 days of social content in 5 minutes",
-    accentColor: "#e11d48",
+    accentColor: "#3b82f6",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Generate 1 week of posts for free, no login", priority: "high" },
       { label: "Platform toggle (Twitter/LinkedIn/Instagram)", priority: "high" },
       { label: "Calendar view of scheduled posts", priority: "medium" },
@@ -474,7 +462,6 @@ export const SITES: Site[] = [
     accentColor: "#f97316",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Location-based weekend suggestions without login", priority: "high" },
       { label: "Share weekend plan as image card", priority: "medium" },
       { label: "Group planning mode (invite friends)", priority: "medium" },
@@ -509,7 +496,6 @@ export const SITES: Site[] = [
     accentColor: "#10b981",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Scan any URL without login (hook)", priority: "high" },
       { label: "Compliance score badge embeddable on sites", priority: "medium" },
       { label: "GDPR vs CCPA comparison guide (SEO content)", priority: "medium" },
@@ -544,7 +530,6 @@ export const SITES: Site[] = [
     accentColor: "#00e5ff",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "NPM package / SDK install CTA above fold", priority: "high" },
       { label: "Live demo trace waterfall on homepage", priority: "high" },
       { label: "GitHub integration (1-click connect)", priority: "medium" },
@@ -575,10 +560,9 @@ export const SITES: Site[] = [
     emoji: "🤖",
     category: "Developer",
     tagline: "Open-source AI projects showcase",
-    accentColor: "#a855f7",
+    accentColor: "#06b6d4",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Chatbot embed widget demo on homepage", priority: "high" },
       { label: "Show project count + tech tags as social proof", priority: "medium" },
       { label: "Submit your project CTA", priority: "medium" },
@@ -611,7 +595,6 @@ export const SITES: Site[] = [
     accentColor: "#f59e0b",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Live prototype preview on homepage", priority: "high" },
       { label: "Template library visible without login", priority: "high" },
       { label: "One-click deploy to Vercel", priority: "medium" },
@@ -644,7 +627,6 @@ export const SITES: Site[] = [
     accentColor: "#64748b",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Demo task automation flow on homepage", priority: "high" },
       { label: "Chrome extension CTA", priority: "high" },
       { label: "Zapier/n8n integration showcase", priority: "medium" },
@@ -677,7 +659,6 @@ export const SITES: Site[] = [
     accentColor: "#ec4899",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Demo clip generation with real podcast audio", priority: "high" },
       { label: "Upload → clip → download in 3 steps above fold", priority: "high" },
       { label: "Captions auto-burn into video clip", priority: "medium" },
@@ -713,7 +694,6 @@ export const SITES: Site[] = [
     accentColor: "#f59e0b",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Playable demo game embedded on homepage", priority: "high" },
       { label: "Game gallery of community-created games", priority: "high" },
       { label: "Prompt → game in 30s demo video", priority: "medium" },
@@ -750,7 +730,6 @@ export const SITES: Site[] = [
     accentColor: "#ef4444",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Log first vital without account (hook)", priority: "high" },
       { label: "Health trend chart visible on homepage", priority: "medium" },
       { label: "Doctor-share report PDF export", priority: "medium" },
@@ -784,7 +763,6 @@ export const SITES: Site[] = [
     accentColor: "#a78bfa",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Record 30s demo entry on homepage without login", priority: "high" },
       { label: "AI emotion detection from voice", priority: "high" },
       { label: "Weekly mood summary email", priority: "medium" },
@@ -817,10 +795,9 @@ export const SITES: Site[] = [
     emoji: "📞",
     category: "Booking",
     tagline: "AI voice booking agent for local businesses",
-    accentColor: "#0ea5e9",
+    accentColor: "#0284c7",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Live demo call on homepage (hear the AI)", priority: "high" },
       { label: "Industry templates (salon, dentist, restaurant)", priority: "high" },
       { label: "Show cost savings vs human receptionist", priority: "medium" },
@@ -854,7 +831,6 @@ export const SITES: Site[] = [
     accentColor: "#f59e0b",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Map demo visible on homepage without login", priority: "high" },
       { label: "Multi-stop route demo with stops input", priority: "high" },
       { label: "Delivery driver vs ride-share positioning split", priority: "medium" },
@@ -888,7 +864,6 @@ export const SITES: Site[] = [
     accentColor: "#6366f1",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Paste meeting transcript → get summary demo", priority: "high" },
       { label: "Zoom/Google Meet integration CTA", priority: "high" },
       { label: "Action items auto-assigned to team members", priority: "medium" },
@@ -924,7 +899,6 @@ export const SITES: Site[] = [
     accentColor: "#ef4444",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Breaking news ticker above fold", priority: "high" },
       { label: "Cricket score widget (live during matches)", priority: "high" },
       { label: "WhatsApp share button on articles", priority: "medium" },
@@ -954,10 +928,9 @@ export const SITES: Site[] = [
     emoji: "🌐",
     category: "News",
     tagline: "Real-time global trending topics",
-    accentColor: "#3b82f6",
+    accentColor: "#dc2626",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Auto-refresh trending topics every 5 min", priority: "high" },
       { label: "Region filter (Americas / Europe / Asia)", priority: "medium" },
       { label: "Share trending topic as image card", priority: "medium" },
@@ -991,7 +964,6 @@ export const SITES: Site[] = [
     accentColor: "#6366f1",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "AI summary badge on every article", priority: "high" },
       { label: "Newsletter signup with daily digest", priority: "medium" },
       { label: "YouTube CTA linking @QuickTechAIPro", priority: "medium" },
@@ -1027,7 +999,6 @@ export const SITES: Site[] = [
     accentColor: "#84cc16",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "State/commodity filter above fold", priority: "high" },
       { label: "SMS price alert for farmers (low-tech hook)", priority: "high" },
       { label: "MSP vs market price comparison badge", priority: "medium" },
@@ -1063,7 +1034,6 @@ export const SITES: Site[] = [
     accentColor: "#e879f9",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Show generated video examples above fold", priority: "high" },
       { label: "Free 2 videos/day — no account needed", priority: "high" },
       { label: "Prompt enhancer makes any prompt cinematic", priority: "medium" },
@@ -1099,7 +1069,6 @@ export const SITES: Site[] = [
     accentColor: "#a855f7",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Agent demo running live on homepage", priority: "high" },
       { label: "Template gallery (pre-built agent flows)", priority: "high" },
       { label: "Pricing page with clear free tier limits", priority: "medium" },
@@ -1131,10 +1100,9 @@ export const SITES: Site[] = [
     emoji: "🎓",
     category: "AI Platform",
     tagline: "AI coaching for skills, habits & goals",
-    accentColor: "#f59e0b",
+    accentColor: "#2563eb",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Free coaching session demo without login", priority: "high" },
       { label: "Show transformation stories (before/after goals)", priority: "high" },
       { label: "Voice coach mode (talk to AI coach)", priority: "medium" },
@@ -1168,7 +1136,6 @@ export const SITES: Site[] = [
     accentColor: "#6366f1",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Live workflow demo running on homepage", priority: "high" },
       { label: "ROI calculator (cost saved vs hiring 1 employee)", priority: "high" },
       { label: "Case study: real workflow with real output", priority: "medium" },
@@ -1203,10 +1170,9 @@ export const SITES: Site[] = [
     emoji: "📄",
     category: "AI Tools",
     tagline: "AI-powered PDF guide ideas you can sell on Gumroad today",
-    accentColor: "#8b5cf6",
+    accentColor: "#e879f9",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Add custom domain (pdfideas.app or similar)", priority: "high" },
       { label: "Show sample generated ideas without auth", priority: "high" },
       { label: "Add Gumroad integration to publish directly", priority: "medium" },
@@ -1241,7 +1207,6 @@ export const SITES: Site[] = [
     accentColor: "#0ea5e9",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Add carrier affiliate links for revenue", priority: "high" },
       { label: "Show price table prominently above fold", priority: "high" },
       { label: "Add bulk shipment comparison (business tier)", priority: "medium" },
@@ -1276,7 +1241,6 @@ export const SITES: Site[] = [
     accentColor: "#8b5cf6",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Wire actual booking flow end-to-end", priority: "high" },
       { label: "Add provider onboarding signup", priority: "high" },
       { label: "Show real local providers if Supabase is live", priority: "medium" },
@@ -1311,7 +1275,6 @@ export const SITES: Site[] = [
     accentColor: "#06b6d4",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Add custom domain (replydesk.app)", priority: "high" },
       { label: "Show live demo with sample support tickets", priority: "high" },
       { label: "Add Shopify / WooCommerce integration", priority: "medium" },
@@ -1345,7 +1308,6 @@ export const SITES: Site[] = [
     accentColor: "#f97316",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Add custom domain (campaignforge.app)", priority: "high" },
       { label: "Show live output generation on homepage", priority: "high" },
       { label: "Add downloadable ZIP of all outputs", priority: "medium" },
@@ -1380,7 +1342,6 @@ export const SITES: Site[] = [
     accentColor: "#ec4899",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Add custom domain (agencyos.app)", priority: "high" },
       { label: "Differentiate from CampaignForge clearly", priority: "high" },
       { label: "Add client portal for sharing outputs", priority: "medium" },
@@ -1417,7 +1378,6 @@ export const SITES: Site[] = [
     accentColor: "#0284c7",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Paste any bill → instant savings estimate (no login)", priority: "high" },
       { label: "Show average savings $ on homepage hero", priority: "high" },
       { label: "List supported providers (Sky, BT, Virgin, etc)", priority: "medium" },
@@ -1452,7 +1412,6 @@ export const SITES: Site[] = [
     accentColor: "#0ea5e9",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Live shift schedule demo on homepage", priority: "high" },
       { label: "Show industries: retail, hospitality, warehouse", priority: "high" },
       { label: "Manager vs worker view split demo", priority: "medium" },
@@ -1485,7 +1444,6 @@ export const SITES: Site[] = [
     accentColor: "#7c3aed",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Upload sample job description → screen demo resumes", priority: "high" },
       { label: "Show ranked candidate list on homepage", priority: "high" },
       { label: "Add ATS integration (Greenhouse, Lever)", priority: "medium" },
@@ -1518,7 +1476,6 @@ export const SITES: Site[] = [
     accentColor: "#0284c7",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Demo pipeline view without login", priority: "high" },
       { label: "LinkedIn import CTA above fold", priority: "high" },
       { label: "AI email draft from prospect profile", priority: "medium" },
@@ -1555,7 +1512,6 @@ export const SITES: Site[] = [
     accentColor: "#16a34a",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Sport picker → instant drill plan demo", priority: "high" },
       { label: "Show video drill examples above fold", priority: "high" },
       { label: "Weekly training plan email subscription", priority: "medium" },
@@ -1591,7 +1547,6 @@ export const SITES: Site[] = [
     accentColor: "#e11d48",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Generate 5 posts for free without login", priority: "high" },
       { label: "Show platform-specific post previews", priority: "high" },
       { label: "Add custom domain (socialspark.app)", priority: "medium" },
@@ -1626,7 +1581,6 @@ export const SITES: Site[] = [
     accentColor: "#b45309",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Before/after slider demo above fold", priority: "high" },
       { label: "Free 1 restore without login", priority: "high" },
       { label: "Show sample old family photos restored", priority: "medium" },
@@ -1659,7 +1613,6 @@ export const SITES: Site[] = [
     accentColor: "#d97706",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Generate 3 ideas without login (hook)", priority: "high" },
       { label: "Show idea validation score + TAM estimate", priority: "high" },
       { label: "Add saved ideas list with shareable link", priority: "medium" },
@@ -1693,7 +1646,6 @@ export const SITES: Site[] = [
     accentColor: "#3b82f6",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Show tool directory on homepage without login", priority: "high" },
       { label: "Add tool categories / filters above fold", priority: "medium" },
       { label: "Submit a tool CTA for community growth", priority: "medium" },
@@ -1728,7 +1680,6 @@ export const SITES: Site[] = [
     accentColor: "#ef4444",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Add custom domain (ytportal.app)", priority: "high" },
       { label: "Paste YouTube URL → get AI summary demo on homepage", priority: "high" },
       { label: "Chapter + timestamp extraction for long videos", priority: "medium" },
@@ -1763,7 +1714,6 @@ export const SITES: Site[] = [
     accentColor: "#f59e0b",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add floating chatbot (Groq Llama 3.3 70B, bottom-right)", priority: "high" },
       { label: "Add custom domain (anylocal.app)", priority: "high" },
       { label: "Browse listings without login (hook)", priority: "high" },
       { label: "Location auto-detect for local results", priority: "medium" },
