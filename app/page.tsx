@@ -4,6 +4,7 @@ import ProvidersPanel from "@/components/ProvidersPanel";
 import GlobalContentPanel from "@/components/GlobalContentPanel";
 import GlobalFlagsPanel from "@/components/GlobalFlagsPanel";
 import DownSiteAlert from "@/components/DownSiteAlert";
+import RunAllAuditsButton from "@/components/RunAllAuditsButton";
 
 interface HealthIssue {
   type: string;
@@ -156,12 +157,15 @@ export default async function DashboardPage() {
             {SITES.length} products · feature toggles · AI providers · live health audit
           </p>
         </div>
-        <a
-          href="/"
-          className="text-zinc-400 hover:text-white text-sm border border-white/10 rounded-lg px-3 py-1.5 transition-colors"
-        >
-          ↺ Refresh
-        </a>
+        <div className="flex items-center gap-2">
+          <RunAllAuditsButton />
+          <a
+            href="/"
+            className="text-zinc-400 hover:text-white text-sm border border-white/10 rounded-lg px-3 py-1.5 transition-colors"
+          >
+            ↺ Refresh
+          </a>
+        </div>
       </div>
 
       <HealthScore statusMap={statusMap} />

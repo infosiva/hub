@@ -59,6 +59,8 @@ export default function SiteCard({
   const [contentEdits, setContentEdits] = useState<Record<string, string>>({});
   const [savingContent, setSavingContent] = useState<string | null>(null);
   const [contentSaved, setContentSaved] = useState<Record<string, boolean>>({});
+  const [auditRunning, setAuditRunning] = useState(false);
+  const [auditResult, setAuditResult] = useState<{ pass: number; fail: number } | null>(null);
 
   const { status, latency, errorType } = statusInfo;
   const accent = site.accentColor ?? "#a78bfa";
@@ -101,6 +103,22 @@ export default function SiteCard({
     },
     [toggles, site.id]
   );
+
+  const handleRunAudit = useCallback(async () => {
+    setAuditRunning(true);
+    setAuditResult(null);
+    try {
+      const res = await fetch(`/api/audit?url=${encodeURIComponent(site.url)}&siteId=${site.id}`, { method: "POST" });
+      if (res.ok) {
+        const data = await res.json();
+        setAuditResult({ pass: data.pass ?? 0, fail: data.fail ?? 0 });
+      }
+    } catch {
+      // silent — result stays null
+    } finally {
+      setAuditRunning(false);
+    }
+  }, [site.url, site.id]);
 
   const handleContentSave = useCallback(
     async (field: string) => {
@@ -356,7 +374,17 @@ export default function SiteCard({
         {/* ── AUDIT ── */}
         {tab === "audit" && (
           <div className="flex flex-col gap-2">
-            <p className="text-zinc-500 text-[10px] uppercase tracking-wider mb-1">Live Health Check</p>
+            <div className="flex items-center justify-between mb-1">
+              <p className="text-zinc-500 text-[10px] uppercase tracking-wider">Live Health Check</p>
+              <button
+                onClick={handleRunAudit}
+                disabled={auditRunning}
+                className="text-[10px] px-3 py-1 rounded-lg font-medium transition-all disabled:opacity-50"
+                style={{ backgroundColor: accent, color: "#000" }}
+              >
+                {auditRunning ? "Running…" : auditResult ? `${auditResult.pass}✓ ${auditResult.fail}✗` : "Run Audit"}
+              </button>
+            </div>
             {issues.length === 0 ? (
               <div className="flex items-center gap-2 text-emerald-400 text-xs">
                 <span>✓</span>
