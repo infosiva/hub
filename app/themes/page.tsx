@@ -84,6 +84,55 @@ interface SiteTheme {
   };
 }
 
+interface DesignStandardRow {
+  project: string;
+  url: string;
+  themeLabel: string;
+  bg: string;
+  accent: string;
+}
+
+interface CollisionRow {
+  project: string;
+  url: string;
+  bg: string;
+  accent: string;
+  layoutArchetype: string;
+  collision: boolean;
+}
+
+// Merges DESIGN-STANDARD.md's synced ground truth with any live per-site
+// Edge Config override, then flags rows sharing an identical (bg, accent) pair.
+function buildCollisionRows(
+  standardRows: DesignStandardRow[],
+  liveThemes: Record<string, SiteTheme>
+): CollisionRow[] {
+  const rows: CollisionRow[] = standardRows.map((r) => {
+    const live = liveThemes[r.project];
+    const bg = live?.background ?? r.bg;
+    const accent = live?.primary ?? r.accent;
+    return {
+      project: r.project,
+      url: r.url,
+      bg,
+      accent,
+      layoutArchetype: live?.layout?.heroVariant ?? "split",
+      collision: false,
+    };
+  });
+
+  const pairCounts = new Map<string, number>();
+  for (const row of rows) {
+    const key = `${row.bg.toLowerCase()}|${row.accent.toLowerCase()}`;
+    pairCounts.set(key, (pairCounts.get(key) ?? 0) + 1);
+  }
+  for (const row of rows) {
+    const key = `${row.bg.toLowerCase()}|${row.accent.toLowerCase()}`;
+    row.collision = (pairCounts.get(key) ?? 0) > 1;
+  }
+  return rows;
+}
+
 function getDefault(siteId: string): SiteTheme {
   return SITE_DEFAULTS[siteId] ?? {
     background: "#07060f",
@@ -105,7 +154,9 @@ export default function ThemesPage() {
   const [removing, setRemoving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"colors" | "widgets" | "layout" | "copy" | "font">("colors");
+  const [activeTab, setActiveTab] = useState<"colors" | "widgets" | "layout" | "copy" | "font" | "collisions">("colors");
+  const [standardRows, setStandardRows] = useState<DesignStandardRow[]>([]);
+  const [standardSyncedAt, setStandardSyncedAt] = useState<number | null>(null);
 
   useEffect(() => {
     fetch("/api/themes")
@@ -115,7 +166,17 @@ export default function ThemesPage() {
         setLoading(false);
       })
       .catch(() => setLoading(false));
+
+    fetch("/api/design-standard")
+      .then((r) => r.json())
+      .then((data) => {
+        setStandardRows(data.rows ?? []);
+        setStandardSyncedAt(data.syncedAt ?? null);
+      })
+      .catch(() => {});
   }, []);
+
+  const collisionRows = buildCollisionRows(standardRows, themes);
 
   const current: SiteTheme = {
     ...getDefault(selected),
@@ -234,6 +295,7 @@ export default function ThemesPage() {
     { id: "layout",  label: "Layout" },
     { id: "copy",    label: "Copy" },
     { id: "font",    label: "Fonts" },
+    { id: "collisions", label: "Collision Audit" },
   ] as const;
 
   return (
@@ -324,6 +386,70 @@ export default function ThemesPage() {
                 </button>
               ))}
             </div>
+
+            {/* Collision Audit tab — cross-site view, synced from DESIGN-STANDARD.md */}
+            {activeTab === "collisions" && (
+              <div className="bg-white/[0.04] border border-white/[0.08] rounded-xl p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-semibold text-white/70">Collision Audit</h3>
+                  <span className="text-xs text-white/40">
+                    {standardSyncedAt
+                      ? `Synced ${new Date(standardSyncedAt).toLocaleString()}`
+                      : "Not synced yet — run scripts/sync-design-standard.mjs"}
+                  </span>
+                </div>
+                {collisionRows.length === 0 ? (
+                  <p className="text-sm text-white/40">
+                    No rows yet. Run <code className="text-white/60">node scripts/sync-design-standard.mjs</code> to seed from DESIGN-STANDARD.md.
+                  </p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="text-left text-white/40 border-b border-white/[0.08]">
+                          <th className="py-2 pr-4">Project</th>
+                          <th className="py-2 pr-4">Bg</th>
+                          <th className="py-2 pr-4">Accent</th>
+                          <th className="py-2 pr-4">Layout</th>
+                          <th className="py-2 pr-4">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {collisionRows.map((row) => (
+                          <tr key={row.project} className="border-b border-white/[0.04]">
+                            <td className="py-2 pr-4">
+                              <a href={`https://${row.url}`} target="_blank" rel="noopener noreferrer" className="hover:text-white/90">
+                                {row.project}
+                              </a>
+                            </td>
+                            <td className="py-2 pr-4">
+                              <span className="inline-flex items-center gap-2">
+                                <span className="w-3 h-3 rounded-full border border-white/20" style={{ background: row.bg }} />
+                                {row.bg}
+                              </span>
+                            </td>
+                            <td className="py-2 pr-4">
+                              <span className="inline-flex items-center gap-2">
+                                <span className="w-3 h-3 rounded-full border border-white/20" style={{ background: row.accent }} />
+                                {row.accent}
+                              </span>
+                            </td>
+                            <td className="py-2 pr-4 text-white/60">{row.layoutArchetype}</td>
+                            <td className="py-2 pr-4">
+                              {row.collision ? (
+                                <span className="text-amber-400 font-medium">⚠ collision</span>
+                              ) : (
+                                <span className="text-emerald-400/80">ok</span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Colors tab */}
             {activeTab === "colors" && (

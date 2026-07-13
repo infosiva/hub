@@ -39,6 +39,9 @@ async function checkUrl(url: string): Promise<CheckResult[]> {
 
       const hasRobots = /name="robots"/i.test(html)
       results.push({ name: 'Robots meta', pass: hasRobots || !html.includes('noindex'), message: hasRobots ? undefined : undefined })
+
+      const hasAdsense = /name="google-adsense-account"/i.test(html)
+      results.push({ name: 'AdSense meta', pass: hasAdsense, message: hasAdsense ? undefined : 'Missing google-adsense-account meta tag' })
     }
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : 'Unknown error'
