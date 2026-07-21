@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 import FeedbackWidget from "@/components/FeedbackWidget";
+import ChatBot from "@/components/ChatBot";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,8 +27,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className={`${inter.className} min-h-full flex flex-col`}>
         {children}
-        <FeedbackWidget siteName="Hub" />
-        <Script defer data-site="ai-products-hub.vercel.app" src="http://31.97.56.148:3098/t.js" strategy="afterInteractive" />
+        <FeedbackWidget siteName="Hub" position="left" />
+        <ChatBot />
       </body>
     </html>
   );
