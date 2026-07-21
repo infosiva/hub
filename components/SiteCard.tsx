@@ -327,6 +327,8 @@ export default function SiteCard({
                       savingToggle === ft.key ? "opacity-50" : ""
                     }`}
                     style={{ backgroundColor: toggles[ft.key] ? accent : "#3f3f46" }}
+                    role="switch"
+                    aria-checked={toggles[ft.key]}
                     aria-label={ft.label}
                   >
                     <span

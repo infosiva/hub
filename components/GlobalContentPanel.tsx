@@ -80,6 +80,7 @@ export default function GlobalContentPanel() {
     <div className="mb-8 rounded-xl border border-violet-500/20 bg-violet-500/[0.04]">
       <button
         onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
         className="w-full flex items-center justify-between px-5 py-4 text-left"
       >
         <div className="flex items-center gap-3">

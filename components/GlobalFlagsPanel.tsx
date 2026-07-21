@@ -147,6 +147,7 @@ export default function GlobalFlagsPanel() {
     <div style={{ marginBottom: 24 }}>
       <button
         onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
         style={{
           width: "100%", padding: "12px 20px", borderRadius: 12,
           background: open ? "#0f172a" : "#1e293b",
@@ -176,6 +177,7 @@ export default function GlobalFlagsPanel() {
             <select
               value={activeFlag}
               onChange={(e) => setActiveFlag(e.target.value as FlagId)}
+              aria-label="Feature flag to apply globally"
               style={{
                 background: "#0f172a", color: "#f1f5f9", border: "1px solid #334155",
                 borderRadius: 6, padding: "4px 8px", fontSize: 13,

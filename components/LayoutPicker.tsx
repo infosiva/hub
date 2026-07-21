@@ -92,6 +92,7 @@ export default function LayoutPicker() {
     <div style={{ marginBottom: 24 }}>
       <button
         onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
         style={{
           width: "100%", padding: "12px 20px", borderRadius: 12,
           background: open ? "#0f172a" : "#1e293b",
@@ -120,6 +121,7 @@ export default function LayoutPicker() {
           <input
             type="text"
             placeholder="Filter sites…"
+            aria-label="Filter sites"
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
             style={{
@@ -161,6 +163,7 @@ export default function LayoutPicker() {
                       value={current ?? ""}
                       disabled={isSaving}
                       onChange={(e) => setLayout(site, e.target.value || null)}
+                      aria-label={`Layout for ${SITE_LABELS[site] ?? site}`}
                       style={{
                         flex: 1, background: "#0f172a", color: "#f1f5f9",
                         border: "1px solid #334155", borderRadius: 6,
