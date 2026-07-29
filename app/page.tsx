@@ -3,6 +3,7 @@ import SiteCard from "@/components/SiteCard";
 import ProvidersPanel from "@/components/ProvidersPanel";
 import GlobalContentPanel from "@/components/GlobalContentPanel";
 import GlobalFlagsPanel from "@/components/GlobalFlagsPanel";
+import AiDigestPanel from "@/components/AiDigestPanel";
 import LayoutPicker from "@/components/LayoutPicker";
 import DownSiteAlert from "@/components/DownSiteAlert";
 import RunAllAuditsButton from "@/components/RunAllAuditsButton";
@@ -175,6 +176,7 @@ export default async function DashboardPage() {
 
       {/* Global Content Override */}
       <LayoutPicker />
+      <AiDigestPanel />
       <GlobalFlagsPanel />
       <GlobalContentPanel />
 
