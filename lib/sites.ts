@@ -619,8 +619,8 @@ export const SITES: Site[] = [
   {
     id: "ninjapa",
     name: "NinjaPA",
-    url: "https://ninjapa.vercel.app",
-    vercelProject: "ninjapa",
+    url: "", // Telegram bot on VPS PM2 — no web URL, not a Vercel deployment
+    vercelProject: "",
     emoji: "🥷",
     category: "Developer",
     tagline: "AI personal assistant for productivity",
@@ -1706,7 +1706,7 @@ export const SITES: Site[] = [
   {
     id: "anylocal",
     name: "AnyLocal",
-    url: "https://anylocal.vercel.app",
+    url: "https://anylocal.app",
     vercelProject: "anylocal",
     emoji: "📍",
     category: "Marketplace",
@@ -1714,7 +1714,6 @@ export const SITES: Site[] = [
     accentColor: "#f59e0b",
     tips: [
       { label: "Add promo code system (§R — LAUNCH50 → 30 days Pro)", priority: "high" },
-      { label: "Add custom domain (anylocal.app)", priority: "high" },
       { label: "Browse listings without login (hook)", priority: "high" },
       { label: "Location auto-detect for local results", priority: "medium" },
       { label: "Post a listing flow under 60 seconds", priority: "medium" },
