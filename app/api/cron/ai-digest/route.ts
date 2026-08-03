@@ -16,6 +16,8 @@ const TELEGRAM_CHAT_ID = process.env.TELEGRAM_AI_DIGEST_CHAT_ID ?? ''
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY ?? ''
 
 async function sendTelegram(text: string) {
+  // @LetsLearnAIBot digest — exempt from the portfolio-wide mute (that flag
+  // mutes the shared per-project bot only, not this dedicated one).
   if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
     console.warn('[ai-digest] TELEGRAM_AI_DIGEST_BOT_TOKEN or CHAT_ID missing — skipping send')
     return false
