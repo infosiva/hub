@@ -48,7 +48,7 @@ async function callCerebras(messages: Msg[], maxTokens: number): Promise<string 
   const res = await fetch('https://api.cerebras.ai/v1/chat/completions', {
     method: 'POST',
     headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model: 'llama3.1-70b', messages, max_tokens: maxTokens, temperature: 0.7 }),
+    body: JSON.stringify({ model: 'gpt-oss-120b', messages, max_tokens: maxTokens, temperature: 0.7 }),
   })
   if (!res.ok) return null
   const data = await res.json()
