@@ -1707,7 +1707,7 @@ export const SITES: Site[] = [
     id: "anylocal",
     name: "AnyLocal",
     url: "https://anylocal.app",
-    vercelProject: "anylocal",
+    vercelProject: "tradespot",
     emoji: "📍",
     category: "Marketplace",
     tagline: "Local marketplace — buy, sell & trade near you",
