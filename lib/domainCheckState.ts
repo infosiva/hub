@@ -23,8 +23,11 @@ export async function getDomainCheckSnapshot(): Promise<DomainCheckSnapshot | nu
       { headers: { Authorization: `Bearer ${env.vercelToken}` }, cache: "no-store" }
     );
     if (!res.ok) return null;
-    const value = await res.json();
-    return value as DomainCheckSnapshot;
+    const body = await res.json();
+    // The Edge Config item-read endpoint wraps the stored value in
+    // { key, value, createdAt, updatedAt, edgeConfigId } — unwrap it.
+    const snapshot = body && typeof body === "object" && "value" in body ? body.value : body;
+    return snapshot as DomainCheckSnapshot;
   } catch {
     return null;
   }
