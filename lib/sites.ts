@@ -1128,7 +1128,7 @@ export const SITES: Site[] = [
   {
     id: "zerostaff",
     name: "ZeroStaff",
-    url: "https://zerostaff-inky.vercel.app",
+    url: "https://zerostaff-infosivas-projects.vercel.app",
     vercelProject: "zerostaff",
     emoji: "⚡",
     category: "AI Platform",
@@ -1539,7 +1539,7 @@ export const SITES: Site[] = [
   {
     id: "socialspark",
     name: "SocialSpark",
-    url: "https://ai-social-content.vercel.app",
+    url: "https://ai-social-content-omega.vercel.app",
     vercelProject: "ai-social-content",
     emoji: "✨",
     category: "Social",
@@ -1672,7 +1672,7 @@ export const SITES: Site[] = [
   {
     id: "ytportal",
     name: "YT Portal",
-    url: "https://yt-portal.vercel.app",
+    url: "https://yt-portal.app",
     vercelProject: "yt-portal",
     emoji: "▶️",
     category: "Media",
@@ -1767,7 +1767,7 @@ export const SITES: Site[] = [
   {
     id: "aisocialcontent",
     name: "AI Social Content",
-    url: "https://ai-social-content.vercel.app",
+    url: "https://ai-social-content-omega.vercel.app",
     vercelProject: "ai-social-content",
     emoji: "📱",
     category: "Marketing",
@@ -1821,7 +1821,7 @@ export const SITES: Site[] = [
   {
     id: "matchly",
     name: "Matchly",
-    url: "https://matchly.vercel.app",
+    url: "https://matchly-kappa.vercel.app",
     vercelProject: "matchly",
     emoji: "💚",
     category: "Social",
@@ -1860,7 +1860,7 @@ export const SITES: Site[] = [
   {
     id: "ytportal",
     name: "YT Portal",
-    url: "https://yt-portal.vercel.app",
+    url: "https://yt-portal.app",
     vercelProject: "yt-portal",
     emoji: "▶️",
     category: "Media/Video",
