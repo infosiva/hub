@@ -1,16 +1,17 @@
 /**
  * Domain/AdSense classification shared by /api/status (live check) and
- * /api/cron/domain-check (daily persisted snapshot + alert).
+ * /api/cron/domain-check (hourly persisted snapshot + alert).
  *
- * Three buckets, in priority order:
- *  - "working"      HTTP 200 and AdSense script present in the served HTML
- *  - "unregistered" domain never delegated, or parked at a registrar/DNS
- *                    provider (GoDaddy, Porkbun, Namecheap, Squarespace,
- *                    dns-parking.com, or a blocked/inaccessible Cloudflare
- *                    zone) — i.e. never actually pointed at the app
- *  - "broken"        domain resolves and something answers, but it's not
- *                    serving the app correctly (wrong project, missing ad
- *                    script, deploy blocked, non-200, etc.)
+ * Four buckets, in priority order:
+ *  - "working"       HTTP 200 and AdSense script present in the served HTML
+ *  - "needs_adsense" HTTP 200, site itself loads fine — just missing/lazy
+ *                     the AdSense script. Site is NOT down, don't alarm on it.
+ *  - "unregistered"  domain never delegated, or parked at a registrar/DNS
+ *                     provider (GoDaddy, Porkbun, Namecheap, Squarespace,
+ *                     dns-parking.com, or a blocked/inaccessible Cloudflare
+ *                     zone) — i.e. never actually pointed at the app
+ *  - "broken"        actual failure: non-200, DNS fail, timeout, SSL error,
+ *                     wrong project served, deploy blocked, etc.
  */
 
 const ADSENSE_MARKER = "pagead2.googlesyndication";
@@ -23,7 +24,7 @@ const PARKING_NS_SIGNATURES = [
   "squarespacedns.com",
 ];
 
-export type DomainStatus = "working" | "broken" | "unregistered";
+export type DomainStatus = "working" | "needs_adsense" | "broken" | "unregistered";
 
 export interface DomainCheckResult {
   id: string;
@@ -72,11 +73,13 @@ export async function checkDomain(site: { id: string; name: string; url: string 
       return { id: site.id, name: site.name, url: site.url, status: "working", httpCode: res.status, hasAdsense, reason: "live, AdSense confirmed", checkedAt };
     }
 
-    // Reachable but not fully correct — that's "broken", not "unregistered".
-    const reason = res.status >= 400
-      ? `HTTP ${res.status}`
-      : "reachable but AdSense script not found in served HTML";
-    return { id: site.id, name: site.name, url: site.url, status: "broken", httpCode: res.status, hasAdsense, reason, checkedAt };
+    // 200 and site loads fine, just no AdSense script yet — site is NOT down.
+    if (res.status >= 200 && res.status < 400) {
+      return { id: site.id, name: site.name, url: site.url, status: "needs_adsense", httpCode: res.status, hasAdsense, reason: "site live — AdSense script not found in served HTML", checkedAt };
+    }
+
+    // Actual failure: non-2xx/3xx response.
+    return { id: site.id, name: site.name, url: site.url, status: "broken", httpCode: res.status, hasAdsense, reason: `HTTP ${res.status}`, checkedAt };
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : String(e);
     const delegated = await resolvesAtAll(hostname);

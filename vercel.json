@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/cron/domain-check",
-      "schedule": "0 7 * * *"
+      "schedule": "0 * * * *"
     },
     {
       "path": "/api/cron/ai-digest",

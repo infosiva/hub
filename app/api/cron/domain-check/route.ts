@@ -27,10 +27,14 @@ export async function GET(req: Request) {
   const snapshot = { checkedAt: new Date().toISOString(), results };
   const saved = await saveDomainCheckSnapshot(snapshot);
 
+  // Only alert on real breakage (broken/unregistered) — a working site that
+  // merely drops its AdSense marker (needs_adsense) is not down, don't alert.
   const regressions = previous
     ? results.filter((r) => {
         const prev = previous.results.find((p) => p.id === r.id);
-        return prev?.status === "working" && r.status !== "working";
+        const wasOk = prev?.status === "working" || prev?.status === "needs_adsense";
+        const nowBroken = r.status === "broken" || r.status === "unregistered";
+        return wasOk && nowBroken;
       })
     : [];
 
@@ -52,6 +56,7 @@ export async function GET(req: Request) {
 
   const summary = {
     working: results.filter((r) => r.status === "working").length,
+    needs_adsense: results.filter((r) => r.status === "needs_adsense").length,
     broken: results.filter((r) => r.status === "broken").length,
     unregistered: results.filter((r) => r.status === "unregistered").length,
   };

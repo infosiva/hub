@@ -10,7 +10,8 @@ interface Snapshot {
 
 const GROUPS: { key: DomainStatus; label: string; color: string; hint: string }[] = [
   { key: "working", label: "Working", color: "#059669", hint: "Live and serving AdSense" },
-  { key: "broken", label: "Not Working", color: "#dc2626", hint: "Domain resolves but app/ads broken" },
+  { key: "needs_adsense", label: "Live — Needs AdSense", color: "#0284c7", hint: "Site works fine, just missing the AdSense script" },
+  { key: "broken", label: "Not Working", color: "#dc2626", hint: "Actual failure — non-200, DNS, timeout, SSL" },
   { key: "unregistered", label: "Not Registered / Parked", color: "#d97706", hint: "Never pointed at the app — DNS/registrar issue" },
 ];
 
@@ -78,7 +79,7 @@ export default function StatusPage() {
 
         <p style={{ color: "#888", marginBottom: "2rem", fontSize: "0.9rem" }}>
           {snapshot ? `Last checked ${new Date(snapshot.checkedAt).toLocaleString()}` : "Loading…"}
-          {" · auto-checked daily at 07:00 UTC via cron"}
+          {" · auto-checked hourly via cron"}
         </p>
 
         {error && <p style={{ color: "#dc2626", marginBottom: "1rem" }}>{error}</p>}
