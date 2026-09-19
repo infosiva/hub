@@ -2,11 +2,14 @@
 // app/api/toggle/route.ts (Vercel Edge Config Items API via EDGE_CONFIG_ID + VERCEL_TOKEN).
 // Keys prefixed `aidigest_` so they sit alongside existing `toggle_*` keys without collision.
 //
-// Read is wrapped in unstable_cache per §0-EDGE-CONFIG-QUOTA — every Edge Config get()
-// must be cached (10min standard) even though this one is cron-triggered (1-3x/day) rather
-// than per-page-render; the portfolio rule doesn't carve out a cron exception.
+// Read is wrapped in unstable_cache per §0-EDGE-CONFIG-QUOTA (10min revalidate, cron-triggered
+// so real risk is low but the rule carries no cron exception). Every write calls revalidateTag
+// to bust that cache immediately — without it, the cron route's own read-after-write within the
+// same 10min window would see stale state and could resend the same topic twice (caught live:
+// first run sent, but /api/ai-digest-settings and a second GET both echoed the pre-write
+// defaults for the full window).
 
-import { unstable_cache } from 'next/cache'
+import { unstable_cache, revalidateTag } from 'next/cache'
 import type { DigestLevel } from './aiDigestTopics'
 
 export type DigestState = {
@@ -64,8 +67,11 @@ async function fetchDigestState(): Promise<DigestState> {
   }
 }
 
-export const getDigestState = unstable_cache(fetchDigestState, ['aidigest-state'], {
+const CACHE_TAG = 'aidigest-state'
+
+export const getDigestState = unstable_cache(fetchDigestState, [CACHE_TAG], {
   revalidate: 600,
+  tags: [CACHE_TAG],
 })
 
 export async function updateDigestState(patch: Partial<DigestState>): Promise<boolean> {
@@ -83,6 +89,9 @@ export async function updateDigestState(patch: Partial<DigestState>): Promise<bo
       headers: { Authorization: `Bearer ${env.vercelToken}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ items }),
     })
+    // { expire: 0 } for immediate invalidation (not profile:'max', which is stale-while-
+    // revalidate — too slow here since the cron route may read its own write back soon after).
+    if (res.ok) revalidateTag(CACHE_TAG, { expire: 0 })
     return res.ok
   } catch {
     return false
