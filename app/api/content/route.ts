@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/auth-guard";
 
 export const runtime = "nodejs";
 
 // PATCH /api/content { siteId, field, value }
 // field: "hero" | "cta" | "tagline"
 export async function PATCH(req: NextRequest) {
+  const denied = requireAdmin(req);
+  if (denied) return denied;
+
   try {
     const { siteId, field, value } = await req.json();
     if (!siteId || !field || typeof value !== "string") {

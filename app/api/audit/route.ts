@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/auth-guard'
 
 export const runtime = 'nodejs'
 export const maxDuration = 30
@@ -52,6 +53,9 @@ async function checkUrl(url: string): Promise<CheckResult[]> {
 }
 
 export async function POST(req: NextRequest) {
+  const denied = requireAdmin(req)
+  if (denied) return denied
+
   const { searchParams } = new URL(req.url)
   const url = searchParams.get('url')
   const siteId = searchParams.get('siteId')
@@ -68,6 +72,9 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
+  const denied = requireAdmin(req)
+  if (denied) return denied
+
   const { searchParams } = new URL(req.url)
   const url = searchParams.get('url')
   const siteId = searchParams.get('siteId')

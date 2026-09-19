@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/auth-guard";
 
 export const runtime = "nodejs";
 
 // PATCH /api/toggle { siteId, key, value }
 // Writes toggle_<siteId>_<key> to Vercel Edge Config via Management API
 export async function PATCH(req: NextRequest) {
+  const denied = requireAdmin(req);
+  if (denied) return denied;
+
   try {
     const { siteId, key, value } = await req.json();
     if (!siteId || !key || typeof value !== "boolean") {

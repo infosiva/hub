@@ -3,10 +3,11 @@
  * POST triggers a fresh live check across all sites (used by the "Refresh now"
  * button on /status) and persists it as the new snapshot.
  */
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { SITES } from "@/lib/sites";
 import { checkAllDomains } from "@/lib/domainCheck";
 import { getDomainCheckSnapshot, saveDomainCheckSnapshot } from "@/lib/domainCheckState";
+import { requireAdmin } from "@/lib/auth-guard";
 
 export const runtime = "nodejs";
 export const revalidate = 0;
@@ -20,7 +21,10 @@ export async function GET() {
   return NextResponse.json({ checkedAt: new Date().toISOString(), results });
 }
 
-export async function POST() {
+export async function POST(req: NextRequest) {
+  const denied = requireAdmin(req);
+  if (denied) return denied;
+
   const results = await checkAllDomains(SITES.map((s) => ({ id: s.id, name: s.name, url: s.url })));
   const snapshot = { checkedAt: new Date().toISOString(), results };
   await saveDomainCheckSnapshot(snapshot);

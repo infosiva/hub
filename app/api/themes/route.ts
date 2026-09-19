@@ -1,22 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { requireAdmin } from "@/lib/auth-guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const COOKIE = "hub_auth";
-const PASSWORD = process.env.DASHBOARD_PASSWORD ?? "siva2026";
-
-function checkAuth(req: NextRequest): boolean {
-  const cookie = req.cookies.get(COOKIE);
-  return cookie?.value === PASSWORD;
-}
-
 // GET /api/themes — returns all theme_* keys
 export async function GET(req: NextRequest) {
-  if (!checkAuth(req)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const denied = requireAdmin(req);
+  if (denied) return denied;
 
   const edgeConfigId = process.env.EDGE_CONFIG_ID;
   const vercelToken = process.env.VERCEL_TOKEN;
@@ -54,9 +45,8 @@ export async function GET(req: NextRequest) {
 // PATCH /api/themes { siteId, theme }
 // theme = { background, primary, secondary, texture, widgets: { chatbot, usagePill, ... } }
 export async function PATCH(req: NextRequest) {
-  if (!checkAuth(req)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const denied = requireAdmin(req);
+  if (denied) return denied;
 
   const { siteId, theme } = await req.json();
   if (!siteId || !theme) {
@@ -94,9 +84,8 @@ export async function PATCH(req: NextRequest) {
 
 // DELETE /api/themes?siteId=xxx — removes theme override, site reverts to defaults
 export async function DELETE(req: NextRequest) {
-  if (!checkAuth(req)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const denied = requireAdmin(req);
+  if (denied) return denied;
 
   const siteId = req.nextUrl.searchParams.get("siteId");
   if (!siteId) {

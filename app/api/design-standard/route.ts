@@ -1,15 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/auth-guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-const COOKIE = "hub_auth";
-const PASSWORD = process.env.DASHBOARD_PASSWORD ?? "siva2026";
-
-function checkAuth(req: NextRequest): boolean {
-  const cookie = req.cookies.get(COOKIE);
-  return cookie?.value === PASSWORD;
-}
 
 export type DesignStandardRow = {
   project: string;
@@ -25,9 +18,8 @@ export type DesignStandardRow = {
 // scripts/sync-design-standard.mjs (run from the monorepo, has fs access to both),
 // which POSTs the parsed rows here to persist into Edge Config.
 export async function GET(req: NextRequest) {
-  if (!checkAuth(req)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const denied = requireAdmin(req);
+  if (denied) return denied;
 
   const edgeConfigId = process.env.EDGE_CONFIG_ID;
   const vercelToken = process.env.VERCEL_TOKEN;
@@ -57,9 +49,8 @@ export async function GET(req: NextRequest) {
 // Re-syncable seed — overwrites the "design_standard" key wholesale.
 // Called by scripts/sync-design-standard.mjs after parsing DESIGN-STANDARD.md.
 export async function POST(req: NextRequest) {
-  if (!checkAuth(req)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const denied = requireAdmin(req);
+  if (denied) return denied;
 
   const body = await req.json().catch(() => null);
   const rows: DesignStandardRow[] | undefined = body?.rows;

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/auth-guard";
 
 export const runtime = "nodejs";
 
@@ -50,6 +51,9 @@ export async function GET(req: NextRequest) {
 // PATCH /api/layout { siteId, layoutId } — sets theme_<siteId>.layoutId
 // Merges into existing theme_<siteId> object so other theme fields survive.
 export async function PATCH(req: NextRequest) {
+  const denied = requireAdmin(req);
+  if (denied) return denied;
+
   try {
     const { siteId, layoutId } = await req.json();
     if (!siteId || (layoutId && !LAYOUTS.some((l) => l.id === layoutId))) {

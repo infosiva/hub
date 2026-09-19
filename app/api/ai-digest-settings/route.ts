@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getDigestState, updateDigestState } from '@/lib/aiDigestState'
+import { requireAdmin } from '@/lib/auth-guard'
 
 export const runtime = 'nodejs'
 
@@ -9,6 +10,9 @@ export async function GET() {
 }
 
 export async function PATCH(req: NextRequest) {
+  const denied = requireAdmin(req)
+  if (denied) return denied
+
   const body = await req.json()
   const patch: { freq?: number; level?: 'beginner' | 'intermediate' | 'advanced' } = {}
   if (typeof body.freq === 'number' && body.freq >= 1 && body.freq <= 3) patch.freq = body.freq

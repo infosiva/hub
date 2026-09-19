@@ -2,21 +2,18 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { accessCodes } from '@/lib/schema'
 import { desc, eq } from 'drizzle-orm'
-
-const PASSWORD = process.env.DASHBOARD_PASSWORD ?? 'siva2026'
-
-function isAdmin(req: NextRequest) {
-  return req.cookies.get('hub_auth')?.value === PASSWORD
-}
+import { requireAdmin } from '@/lib/auth-guard'
 
 export async function GET(req: NextRequest) {
-  if (!isAdmin(req)) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
+  const denied = requireAdmin(req)
+  if (denied) return denied
   const rows = await db.select().from(accessCodes).orderBy(desc(accessCodes.createdAt))
   return NextResponse.json({ codes: rows })
 }
 
 export async function POST(req: NextRequest) {
-  if (!isAdmin(req)) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
+  const denied = requireAdmin(req)
+  if (denied) return denied
   const { code, project, daysUnlocked, feature } = await req.json()
   if (!code || !daysUnlocked) {
     return NextResponse.json({ error: 'code and daysUnlocked required' }, { status: 400 })
@@ -29,7 +26,8 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  if (!isAdmin(req)) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
+  const denied = requireAdmin(req)
+  if (denied) return denied
   const { id } = await req.json()
   if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 })
   await db.update(accessCodes).set({ revokedAt: new Date() }).where(eq(accessCodes.id, id))

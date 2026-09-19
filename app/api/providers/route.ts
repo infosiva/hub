@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/auth-guard";
 
 export const runtime = "nodejs";
 
@@ -54,6 +55,9 @@ export async function GET() {
 //    or { action: "enable", provider: string }
 //    or { action: "add", provider: string }
 export async function PATCH(req: NextRequest) {
+  const denied = requireAdmin(req);
+  if (denied) return denied;
+
   try {
     const body = await req.json();
     const { action } = body;
