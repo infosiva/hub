@@ -1,7 +1,12 @@
 // Edge Config read/write for AI Daily Digest state — same raw-fetch pattern as
 // app/api/toggle/route.ts (Vercel Edge Config Items API via EDGE_CONFIG_ID + VERCEL_TOKEN).
 // Keys prefixed `aidigest_` so they sit alongside existing `toggle_*` keys without collision.
+//
+// Read is wrapped in unstable_cache per §0-EDGE-CONFIG-QUOTA — every Edge Config get()
+// must be cached (10min standard) even though this one is cron-triggered (1-3x/day) rather
+// than per-page-render; the portfolio rule doesn't carve out a cron exception.
 
+import { unstable_cache } from 'next/cache'
 import type { DigestLevel } from './aiDigestTopics'
 
 export type DigestState = {
@@ -31,13 +36,13 @@ function edgeConfigEnv() {
   return { edgeConfigId, vercelToken }
 }
 
-export async function getDigestState(): Promise<DigestState> {
+async function fetchDigestState(): Promise<DigestState> {
   const env = edgeConfigEnv()
   if (!env) return DEFAULT_STATE
   try {
     const res = await fetch(
       `https://api.vercel.com/v1/edge-config/${env.edgeConfigId}/items?prefix=aidigest_`,
-      { headers: { Authorization: `Bearer ${env.vercelToken}` }, cache: 'no-store' }
+      { headers: { Authorization: `Bearer ${env.vercelToken}` } }
     )
     if (!res.ok) return DEFAULT_STATE
     const data = await res.json()
@@ -58,6 +63,10 @@ export async function getDigestState(): Promise<DigestState> {
     return DEFAULT_STATE
   }
 }
+
+export const getDigestState = unstable_cache(fetchDigestState, ['aidigest-state'], {
+  revalidate: 600,
+})
 
 export async function updateDigestState(patch: Partial<DigestState>): Promise<boolean> {
   const env = edgeConfigEnv()

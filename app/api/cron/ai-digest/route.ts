@@ -85,51 +85,61 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const state = await getDigestState()
+  try {
+    const state = await getDigestState()
 
-  const today = new Date().toISOString().slice(0, 10)
-  const sentSoFarToday = state.lastSentDate === today ? state.sentToday : 0
-  if (sentSoFarToday >= state.freq) {
-    return NextResponse.json({ sent: false, skipped: 'freq limit reached for today', freq: state.freq, sentSoFarToday })
+    const today = new Date().toISOString().slice(0, 10)
+    const sentSoFarToday = state.lastSentDate === today ? state.sentToday : 0
+    if (sentSoFarToday >= state.freq) {
+      return NextResponse.json({ sent: false, skipped: 'freq limit reached for today', freq: state.freq, sentSoFarToday })
+    }
+
+    const nextIndex = state.lastTopicIndex + 1
+    const topic = getTopic(state.level, nextIndex)
+    const cycled = nextIndex >= topicCount(state.level)
+
+    const [{ explanation, quizQuestion, quizAnswer }, video] = await Promise.all([
+      generateDigest(topic, state.level),
+      findYouTubeVideo(topic),
+    ])
+
+    const parts: string[] = []
+    if (state.lastTopic && state.lastAnswer) {
+      parts.push(`🧠 <b>Yesterday's recall</b>\nYou learned about "${state.lastTopic}". Quick check: ${state.lastAnswer}`)
+    }
+    parts.push(`📚 <b>Day ${nextIndex + 1} — ${state.level.toUpperCase()}</b>\n<b>${topic}</b>${cycled ? ' (revisiting — you\'ve completed this level once)' : ''}\n\n${explanation}`)
+    if (video) {
+      parts.push(`🎥 ${video.title}\n${video.url}`)
+    }
+    if (quizQuestion) {
+      parts.push(`❓ <i>Tomorrow's recall check:</i> ${quizQuestion}`)
+    }
+
+    const message = parts.join('\n\n')
+    const sent = await sendTelegram(message)
+
+    await updateDigestState({
+      lastTopicIndex: nextIndex % topicCount(state.level),
+      lastTopic: topic,
+      lastAnswer: quizAnswer || null,
+      lastSentDate: today,
+      sentToday: sentSoFarToday + 1,
+    })
+
+    return NextResponse.json({
+      sent,
+      topic,
+      level: state.level,
+      index: nextIndex,
+      hadVideo: !!video,
+    })
+  } catch (err) {
+    // Never let this cron 500 with an empty body — log the real cause (all-providers-
+    // exhausted, Edge Config failure, etc.) so a failed run is diagnosable from Vercel logs.
+    console.error('[ai-digest] run failed:', err)
+    return NextResponse.json(
+      { sent: false, error: err instanceof Error ? err.message : String(err) },
+      { status: 500 }
+    )
   }
-
-  const nextIndex = state.lastTopicIndex + 1
-  const topic = getTopic(state.level, nextIndex)
-  const cycled = nextIndex >= topicCount(state.level)
-
-  const [{ explanation, quizQuestion, quizAnswer }, video] = await Promise.all([
-    generateDigest(topic, state.level),
-    findYouTubeVideo(topic),
-  ])
-
-  const parts: string[] = []
-  if (state.lastTopic && state.lastAnswer) {
-    parts.push(`🧠 <b>Yesterday's recall</b>\nYou learned about "${state.lastTopic}". Quick check: ${state.lastAnswer}`)
-  }
-  parts.push(`📚 <b>Day ${nextIndex + 1} — ${state.level.toUpperCase()}</b>\n<b>${topic}</b>${cycled ? ' (revisiting — you\'ve completed this level once)' : ''}\n\n${explanation}`)
-  if (video) {
-    parts.push(`🎥 ${video.title}\n${video.url}`)
-  }
-  if (quizQuestion) {
-    parts.push(`❓ <i>Tomorrow's recall check:</i> ${quizQuestion}`)
-  }
-
-  const message = parts.join('\n\n')
-  const sent = await sendTelegram(message)
-
-  await updateDigestState({
-    lastTopicIndex: nextIndex % topicCount(state.level),
-    lastTopic: topic,
-    lastAnswer: quizAnswer || null,
-    lastSentDate: today,
-    sentToday: sentSoFarToday + 1,
-  })
-
-  return NextResponse.json({
-    sent,
-    topic,
-    level: state.level,
-    index: nextIndex,
-    hadVideo: !!video,
-  })
 }

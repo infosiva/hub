@@ -12,7 +12,7 @@
 ## Secrets (already obtained, go to env only — NEVER commit)
 - `TELEGRAM_AI_DIGEST_BOT_TOKEN` = 8646200861:AAFBZLsEFOpziq8-NR7lrZfZq5Fb41an5aY
 - `TELEGRAM_AI_DIGEST_CHAT_ID` = 8452559091
-- `YOUTUBE_API_KEY` = **user still needs to generate** (console.cloud.google.com → enable YouTube Data API v3 → create key, free tier)
+- `YOUTUBE_API_KEY` = in `.env.shared` (confirmed present 2026-09-19)
 
 ## Files to touch
 - `hub/lib/aiDigestTopics.ts` — curriculum topic list (beginner/intermediate/advanced arrays)
@@ -25,7 +25,7 @@
 
 ## Steps
 - [x] Bot created, token + chat_id obtained
-- [ ] YOUTUBE_API_KEY obtained from user
+- [x] YOUTUBE_API_KEY obtained from user
 - [ ] lib/aiDigestTopics.ts — curriculum list written
 - [ ] lib/aiDigestState.ts — Edge Config helpers
 - [ ] app/api/cron/ai-digest/route.ts — handler built
