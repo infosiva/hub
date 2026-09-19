@@ -26,12 +26,12 @@
 ## Steps
 - [x] Bot created, token + chat_id obtained
 - [x] YOUTUBE_API_KEY obtained from user
-- [ ] lib/aiDigestTopics.ts — curriculum list written
-- [ ] lib/aiDigestState.ts — Edge Config helpers
-- [ ] app/api/cron/ai-digest/route.ts — handler built
-- [ ] vercel.json cron schedule added
-- [ ] Hub settings UI for freq/level
-- [ ] Env vars pushed to Vercel (hub project only)
+- [x] lib/aiDigestTopics.ts — curriculum list written
+- [x] lib/aiDigestState.ts — Edge Config helpers
+- [x] app/api/cron/ai-digest/route.ts — handler built
+- [x] vercel.json cron schedule added
+- [x] Hub settings UI for freq/level
+- [x] Env vars pushed to Vercel (hub project only) — EDGE_CONFIG_ID fixed, CRON_SECRET set, CEREBRAS_API_KEY re-added (valid, 402 no-credit — falls through cascade fine). GROQ_API_KEY still dead (401) portfolio-wide, needs real rotation at console.groq.com/keys — not hub-blocking, cascade covers it via Gemini/Cerebras.
 - [ ] Manual curl test of route → confirm real Telegram message received
 - [ ] npm run build clean, push, verify Vercel green
 - [ ] Confirm cron registered in Vercel dashboard

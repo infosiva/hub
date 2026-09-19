@@ -10,7 +10,8 @@ async function callGroq(messages: Msg[], maxTokens: number): Promise<string | nu
   const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
     headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages, max_tokens: maxTokens, temperature: 0.7 }),
+    // llama-3.3-70b-versatile retired by Groq (404 model_not_found, confirmed 2026-09-19) — switched to gpt-oss-120b.
+    body: JSON.stringify({ model: 'openai/gpt-oss-120b', messages, max_tokens: maxTokens, temperature: 0.7 }),
   })
   if (!res.ok) return null
   const data = await res.json()
