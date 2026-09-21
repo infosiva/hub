@@ -35,35 +35,36 @@ const DEFAULT_STATE: DigestState = {
 function edgeConfigEnv() {
   const edgeConfigId = process.env.EDGE_CONFIG_ID
   const vercelToken = process.env.VERCEL_TOKEN
-  if (!edgeConfigId || !vercelToken) return null
+  if (!edgeConfigId || !vercelToken) {
+    throw new Error(
+      `[ai-digest] EDGE_CONFIG_ID or VERCEL_TOKEN missing (edgeConfigId=${edgeConfigId ? 'set' : 'MISSING'}, vercelToken=${vercelToken ? 'set' : 'MISSING'}) — refusing to fall back to default state, that silently re-sends topic 0 forever`
+    )
+  }
   return { edgeConfigId, vercelToken }
 }
 
 async function fetchDigestState(): Promise<DigestState> {
   const env = edgeConfigEnv()
-  if (!env) return DEFAULT_STATE
-  try {
-    const res = await fetch(
-      `https://api.vercel.com/v1/edge-config/${env.edgeConfigId}/items?prefix=aidigest_`,
-      { headers: { Authorization: `Bearer ${env.vercelToken}` } }
-    )
-    if (!res.ok) return DEFAULT_STATE
-    const data = await res.json()
-    const items: Record<string, unknown> = {}
-    for (const item of data.items ?? []) {
-      items[(item.key as string).replace('aidigest_', '')] = item.value
-    }
-    return {
-      freq: typeof items.freq === 'number' ? items.freq : DEFAULT_STATE.freq,
-      level: (items.level as DigestLevel) ?? DEFAULT_STATE.level,
-      lastTopicIndex: typeof items.lastTopicIndex === 'number' ? items.lastTopicIndex : DEFAULT_STATE.lastTopicIndex,
-      lastTopic: (items.lastTopic as string) ?? null,
-      lastAnswer: (items.lastAnswer as string) ?? null,
-      lastSentDate: (items.lastSentDate as string) ?? null,
-      sentToday: typeof items.sentToday === 'number' ? items.sentToday : 0,
-    }
-  } catch {
-    return DEFAULT_STATE
+  const res = await fetch(
+    `https://api.vercel.com/v1/edge-config/${env.edgeConfigId}/items?prefix=aidigest_`,
+    { headers: { Authorization: `Bearer ${env.vercelToken}` } }
+  )
+  if (!res.ok) {
+    throw new Error(`[ai-digest] Edge Config read failed: ${res.status} ${await res.text().catch(() => '')}`)
+  }
+  const data = await res.json()
+  const items: Record<string, unknown> = {}
+  for (const item of data.items ?? []) {
+    items[(item.key as string).replace('aidigest_', '')] = item.value
+  }
+  return {
+    freq: typeof items.freq === 'number' ? items.freq : DEFAULT_STATE.freq,
+    level: (items.level as DigestLevel) ?? DEFAULT_STATE.level,
+    lastTopicIndex: typeof items.lastTopicIndex === 'number' ? items.lastTopicIndex : DEFAULT_STATE.lastTopicIndex,
+    lastTopic: (items.lastTopic as string) ?? null,
+    lastAnswer: (items.lastAnswer as string) ?? null,
+    lastSentDate: (items.lastSentDate as string) ?? null,
+    sentToday: typeof items.sentToday === 'number' ? items.sentToday : 0,
   }
 }
 
@@ -76,24 +77,22 @@ export const getDigestState = unstable_cache(fetchDigestState, [CACHE_TAG], {
 
 export async function updateDigestState(patch: Partial<DigestState>): Promise<boolean> {
   const env = edgeConfigEnv()
-  if (!env) return false
   const items = Object.entries(patch).map(([key, value]) => ({
     operation: 'upsert',
     key: `aidigest_${key}`,
     value,
   }))
   if (!items.length) return true
-  try {
-    const res = await fetch(`https://api.vercel.com/v1/edge-config/${env.edgeConfigId}/items`, {
-      method: 'PATCH',
-      headers: { Authorization: `Bearer ${env.vercelToken}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items }),
-    })
-    // { expire: 0 } for immediate invalidation (not profile:'max', which is stale-while-
-    // revalidate — too slow here since the cron route may read its own write back soon after).
-    if (res.ok) revalidateTag(CACHE_TAG, { expire: 0 })
-    return res.ok
-  } catch {
-    return false
+  const res = await fetch(`https://api.vercel.com/v1/edge-config/${env.edgeConfigId}/items`, {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${env.vercelToken}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ items }),
+  })
+  if (!res.ok) {
+    throw new Error(`[ai-digest] Edge Config write failed: ${res.status} ${await res.text().catch(() => '')}`)
   }
+  // { expire: 0 } for immediate invalidation (not profile:'max', which is stale-while-
+  // revalidate — too slow here since the cron route may read its own write back soon after).
+  revalidateTag(CACHE_TAG, { expire: 0 })
+  return true
 }
