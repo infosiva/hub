@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { SITES } from "@/lib/sites";
+import { MARKETING_PLATFORMS } from "@/lib/marketingPlatforms";
 
 // ─── Product config ────────────────────────────────────────────────────────────
 
@@ -12,15 +14,23 @@ interface MarketingProduct {
   emoji: string;
   color: string;
   category: string;
-  // for copy generation
-  audience: string;
-  painPoint: string;
-  keyFeatures: string[];
-  freeLimit: string;
-  proPrice: string;
-  subreddits: string[];
-  phTagline: string;
+  // for copy generation — only populated for hand-curated products;
+  // AI generation only needs name/tagline/url/category, so the rest
+  // are optional for the auto-derived (non-curated) portfolio entries
+  audience?: string;
+  painPoint?: string;
+  keyFeatures?: string[];
+  freeLimit?: string;
+  proPrice?: string;
+  subreddits?: string[];
+  phTagline?: string;
+  curated?: boolean;
 }
+
+// Curated products always have the full field set (PRODUCTS below is typed
+// against this) — the 5 template generators require it.
+type CuratedProduct = MarketingProduct &
+  Required<Pick<MarketingProduct, "audience" | "painPoint" | "keyFeatures" | "freeLimit" | "proPrice" | "subreddits" | "phTagline">>;
 
 const PRODUCTS: MarketingProduct[] = [
   {
@@ -105,9 +115,36 @@ const PRODUCTS: MarketingProduct[] = [
   },
 ];
 
+// Full portfolio (59 sites) for the picker — curated PRODUCTS entries above
+// have hand-written marketing fields (used by the instant template
+// generators); every other site is auto-derived from the Hub site registry
+// and only supports AI-generated copy (needs just name/tagline/url/category).
+const CURATED_IDS = new Set(PRODUCTS.map(p => p.id));
+const AUTO_COLORS = ["text-cyan-400", "text-sky-400", "text-teal-400", "text-lime-400", "text-orange-400", "text-rose-400", "text-indigo-400"];
+const SEEN_IDS = new Set<string>();
+const PORTFOLIO: MarketingProduct[] = [
+  ...PRODUCTS,
+  ...SITES
+    .filter(s => {
+      if (CURATED_IDS.has(s.id) || SEEN_IDS.has(s.id)) return false;
+      SEEN_IDS.add(s.id);
+      return true;
+    })
+    .map((s, i) => ({
+      id: s.id,
+      name: s.name,
+      tagline: s.tagline,
+      url: s.url,
+      emoji: s.emoji,
+      color: AUTO_COLORS[i % AUTO_COLORS.length],
+      category: s.category,
+      curated: false,
+    })),
+];
+
 // ─── Copy generators ────────────────────────────────────────────────────────────
 
-function generateRedditPost(p: MarketingProduct): string {
+function generateRedditPost(p: CuratedProduct): string {
   return `**I built a free ${p.category} tool — would love your feedback**
 
 ${p.painPoint}
@@ -124,7 +161,7 @@ It's free to start (${p.freeLimit}). No signup required to try the core feature.
 I'm actively building this and would love honest feedback. What would make this actually useful for you?`;
 }
 
-function generateRedditComment(p: MarketingProduct): string {
+function generateRedditComment(p: CuratedProduct): string {
   return `Hey, not sure if this helps — I built **${p.name}** for exactly this use case. It's ${p.tagline.toLowerCase()}.
 
 ${p.keyFeatures[0]} and ${p.keyFeatures[1].toLowerCase()}.
@@ -132,7 +169,7 @@ ${p.keyFeatures[0]} and ${p.keyFeatures[1].toLowerCase()}.
 Free to try: ${p.url}`;
 }
 
-function generateProductHunt(p: MarketingProduct): string {
+function generateProductHunt(p: CuratedProduct): string {
   return `**Tagline:** ${p.phTagline}
 
 **Description:**
@@ -155,7 +192,7 @@ Would love your feedback — what features would make this a daily habit for you
 → ${p.url}`;
 }
 
-function generateDirectory(p: MarketingProduct): string {
+function generateDirectory(p: CuratedProduct): string {
   return `**Name:** ${p.name}
 **URL:** ${p.url}
 **Tagline:** ${p.phTagline}
@@ -180,7 +217,7 @@ Start free at ${p.url} — no credit card required.
 **Pricing:** Freemium (${p.freeLimit} free, Pro ${p.proPrice})`;
 }
 
-function generateTweet(p: MarketingProduct): string {
+function generateTweet(p: CuratedProduct): string {
   return `🧵 I built ${p.name} — ${p.tagline}.
 
 Here's what I learned building it:
@@ -212,28 +249,62 @@ const DIRECTORIES = [
 
 // ─── UI ─────────────────────────────────────────────────────────────────────────
 
-type Platform = "reddit-post" | "reddit-comment" | "producthunt" | "directory" | "tweet";
-
-const PLATFORMS: { id: Platform; label: string; emoji: string }[] = [
-  { id: "reddit-post", label: "Reddit Post", emoji: "📢" },
-  { id: "reddit-comment", label: "Reddit Comment", emoji: "💬" },
-  { id: "producthunt", label: "ProductHunt", emoji: "🚀" },
-  { id: "directory", label: "Directory Submit", emoji: "📋" },
-  { id: "tweet", label: "Twitter/X Thread", emoji: "🐦" },
-];
+// Platform list is data-driven from lib/marketingPlatforms.ts — the single
+// source of truth shared with /api/marketing. Add a platform there, it shows
+// up here and in AI generation automatically, no code change needed.
+type Platform = string;
+const PLATFORMS = MARKETING_PLATFORMS;
 
 export default function MarketingPage() {
-  const [selectedProduct, setSelectedProduct] = useState<MarketingProduct>(PRODUCTS[0]);
+  const [selectedProduct, setSelectedProduct] = useState<MarketingProduct>(PORTFOLIO[0]);
   const [platform, setPlatform] = useState<Platform>("reddit-post");
   const [copied, setCopied] = useState(false);
+  const [search, setSearch] = useState("");
+  const [angle, setAngle] = useState("");
+  const [aiCopy, setAiCopy] = useState<string | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+
+  const filteredPortfolio = PORTFOLIO.filter(
+    p => p.name.toLowerCase().includes(search.toLowerCase()) || p.category.toLowerCase().includes(search.toLowerCase())
+  );
+
+  function selectProduct(p: MarketingProduct) {
+    setSelectedProduct(p);
+    setAiCopy(null);
+    setAiError(null);
+  }
 
   function getCopy(): string {
+    if (aiCopy !== null) return aiCopy;
+    if (selectedProduct.curated === false) return "";
+    const p = selectedProduct as CuratedProduct;
     switch (platform) {
-      case "reddit-post": return generateRedditPost(selectedProduct);
-      case "reddit-comment": return generateRedditComment(selectedProduct);
-      case "producthunt": return generateProductHunt(selectedProduct);
-      case "directory": return generateDirectory(selectedProduct);
-      case "tweet": return generateTweet(selectedProduct);
+      case "reddit-post": return generateRedditPost(p);
+      case "reddit-comment": return generateRedditComment(p);
+      case "producthunt": return generateProductHunt(p);
+      case "directory": return generateDirectory(p);
+      case "tweet": return generateTweet(p);
+      default: return ""; // no instant template for this platform — use Generate with AI
+    }
+  }
+
+  async function handleGenerateAI() {
+    setAiLoading(true);
+    setAiError(null);
+    try {
+      const res = await fetch("/api/marketing", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ siteId: selectedProduct.id, platform, angle: angle.trim() || undefined }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "generation failed");
+      setAiCopy(data.text);
+    } catch (e) {
+      setAiError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setAiLoading(false);
     }
   }
 
@@ -275,24 +346,40 @@ export default function MarketingPage() {
 
           {/* Left: product picker */}
           <div className="space-y-3">
-            <p className="text-white/30 text-xs font-semibold uppercase tracking-widest mb-4">Select Product</p>
-            {PRODUCTS.map(p => (
-              <button
-                key={p.id}
-                onClick={() => setSelectedProduct(p)}
-                className={`w-full text-left px-4 py-3 rounded-xl border transition-all flex items-center gap-3 ${
-                  selectedProduct.id === p.id
-                    ? "bg-white/10 border-white/20"
-                    : "bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06]"
-                }`}
-              >
-                <span className="text-2xl">{p.emoji}</span>
-                <div>
-                  <div className={`font-semibold text-sm ${p.color}`}>{p.name}</div>
-                  <div className="text-white/35 text-xs truncate max-w-[180px]">{p.category}</div>
-                </div>
-              </button>
-            ))}
+            <p className="text-white/30 text-xs font-semibold uppercase tracking-widest mb-4">
+              Select Product <span className="normal-case text-white/20">({PORTFOLIO.length})</span>
+            </p>
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search products…"
+              className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] text-sm text-white/70 placeholder:text-white/25 focus:outline-none focus:border-white/20 mb-1"
+            />
+            <div className="space-y-2 max-h-[520px] overflow-y-auto pr-1">
+              {filteredPortfolio.map(p => (
+                <button
+                  key={p.id}
+                  onClick={() => selectProduct(p)}
+                  className={`w-full text-left px-4 py-3 rounded-xl border transition-all flex items-center gap-3 ${
+                    selectedProduct.id === p.id
+                      ? "bg-white/10 border-white/20"
+                      : "bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06]"
+                  }`}
+                >
+                  <span className="text-2xl">{p.emoji}</span>
+                  <div className="min-w-0">
+                    <div className={`font-semibold text-sm ${p.color} flex items-center gap-1.5`}>
+                      <span className="truncate">{p.name}</span>
+                      {p.curated !== false && <span title="Instant templates available" className="text-[9px] text-emerald-400/70">●</span>}
+                    </div>
+                    <div className="text-white/35 text-xs truncate max-w-[180px]">{p.category}</div>
+                  </div>
+                </button>
+              ))}
+              {filteredPortfolio.length === 0 && (
+                <p className="text-white/25 text-xs px-2 py-4">No products match &ldquo;{search}&rdquo;.</p>
+              )}
+            </div>
 
             {/* Directory links */}
             <div className="mt-8">
@@ -416,7 +503,7 @@ export default function MarketingPage() {
               </div>
 
               {/* Subreddit suggestions for reddit tabs */}
-              {(platform === "reddit-post" || platform === "reddit-comment") && (
+              {(platform === "reddit-post" || platform === "reddit-comment") && selectedProduct.subreddits && (
                 <div className="flex flex-wrap gap-2 mb-4">
                   <span className="text-white/30 text-xs py-1">Post in:</span>
                   {selectedProduct.subreddits.map(sub => (
@@ -433,21 +520,62 @@ export default function MarketingPage() {
                 </div>
               )}
 
+              {/* AI angle + generate */}
+              <div className="glass-card rounded-xl p-4 mb-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-white/40 text-xs font-semibold uppercase tracking-widest">Angle (optional)</label>
+                  {!MARKETING_PLATFORMS.find(p => p.id === platform)?.hasTemplate && (
+                    <span className="text-[10px] text-amber-300/70">AI-only platform — no instant template</span>
+                  )}
+                </div>
+                <textarea
+                  value={angle}
+                  onChange={e => setAngle(e.target.value)}
+                  placeholder="e.g. focus on the free tier, or a recent feature launch…"
+                  rows={2}
+                  className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] text-sm text-white/70 placeholder:text-white/25 focus:outline-none focus:border-white/20 resize-none"
+                />
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={handleGenerateAI}
+                    disabled={aiLoading}
+                    className="px-4 py-2 rounded-lg text-sm font-semibold bg-gradient-to-r from-violet-500/80 to-fuchsia-500/80 text-white hover:from-violet-500 hover:to-fuchsia-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {aiLoading ? "Generating…" : "✨ Generate with AI"}
+                  </button>
+                  {aiCopy !== null && (
+                    <button
+                      onClick={() => setAiCopy(null)}
+                      className="text-xs text-white/30 hover:text-white/60 transition-colors"
+                    >
+                      Revert to template
+                    </button>
+                  )}
+                  {aiError && <span className="text-xs text-red-400">{aiError}</span>}
+                </div>
+              </div>
+
               {/* Copy box */}
               <div className="relative">
                 <div className="glass-card rounded-xl p-5">
-                  <pre className="text-white/80 text-sm leading-relaxed whitespace-pre-wrap font-sans">{copy}</pre>
+                  {copy ? (
+                    <pre className="text-white/80 text-sm leading-relaxed whitespace-pre-wrap font-sans">{copy}</pre>
+                  ) : (
+                    <p className="text-white/25 text-sm italic">No instant template for this product/platform combo — click &ldquo;Generate with AI&rdquo; above.</p>
+                  )}
                 </div>
-                <button
-                  onClick={handleCopy}
-                  className={`absolute top-3 right-3 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
-                    copied
-                      ? "bg-green-500/20 text-green-300 border border-green-500/30"
-                      : "bg-white/[0.08] text-white/60 border border-white/10 hover:bg-white/15"
-                  }`}
-                >
-                  {copied ? "✓ Copied!" : "Copy"}
-                </button>
+                {copy && (
+                  <button
+                    onClick={handleCopy}
+                    className={`absolute top-3 right-3 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                      copied
+                        ? "bg-green-500/20 text-green-300 border border-green-500/30"
+                        : "bg-white/[0.08] text-white/60 border border-white/10 hover:bg-white/15"
+                    }`}
+                  >
+                    {copied ? "✓ Copied!" : "Copy"}
+                  </button>
+                )}
               </div>
 
               {/* Character count */}
@@ -462,17 +590,19 @@ export default function MarketingPage() {
             </div>
 
             {/* Feature list for context */}
-            <div className="glass-card rounded-xl p-5">
-              <p className="text-white/30 text-xs font-semibold uppercase tracking-widest mb-3">Key Features to Highlight</p>
-              <ul className="space-y-1.5">
-                {selectedProduct.keyFeatures.map((f, i) => (
-                  <li key={i} className="text-white/60 text-sm flex items-start gap-2">
-                    <span className={`${selectedProduct.color} mt-0.5`}>✓</span>
-                    {f}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {selectedProduct.keyFeatures && (
+              <div className="glass-card rounded-xl p-5">
+                <p className="text-white/30 text-xs font-semibold uppercase tracking-widest mb-3">Key Features to Highlight</p>
+                <ul className="space-y-1.5">
+                  {selectedProduct.keyFeatures.map((f, i) => (
+                    <li key={i} className="text-white/60 text-sm flex items-start gap-2">
+                      <span className={`${selectedProduct.color} mt-0.5`}>✓</span>
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
           </div>
         </div>
