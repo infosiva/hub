@@ -1,40 +1,44 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { unstable_cache } from "next/cache";
+import { requireAdmin } from "@/lib/auth-guard";
 
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
 
-// GET /api/flags — returns all toggle_* keys from Edge Config
-export async function GET() {
-  try {
+const getFlags = unstable_cache(
+  async () => {
     const edgeConfigId = process.env.EDGE_CONFIG_ID;
     const vercelToken = process.env.VERCEL_TOKEN;
     if (!edgeConfigId || !vercelToken) {
-      return NextResponse.json({ error: "EDGE_CONFIG_ID or VERCEL_TOKEN not set" }, { status: 500 });
+      throw new Error("EDGE_CONFIG_ID or VERCEL_TOKEN not set");
     }
 
     const res = await fetch(
       `https://api.vercel.com/v1/edge-config/${edgeConfigId}/items`,
-      {
-        headers: { Authorization: `Bearer ${vercelToken}` },
-        cache: "no-store",
-      }
+      { headers: { Authorization: `Bearer ${vercelToken}` } }
     );
-
-    if (!res.ok) {
-      const err = await res.text();
-      return NextResponse.json({ error: `Edge Config read failed: ${err}` }, { status: 500 });
-    }
+    if (!res.ok) throw new Error(`Edge Config read failed: ${await res.text()}`);
 
     const data = await res.json();
-    // Filter only toggle_* keys
     const flags: Record<string, boolean> = {};
     for (const item of data.items ?? []) {
       if (item.key?.startsWith("toggle_") && typeof item.value === "boolean") {
         flags[item.key] = item.value;
       }
     }
+    return flags;
+  },
+  ["hub-edge-config-flags"],
+  { revalidate: 600 }
+);
 
-    return NextResponse.json({ flags });
+// GET /api/flags — admin-only, returns all toggle_* keys from Edge Config.
+// Internal roster/flag state, not for public or per-project consumption.
+export async function GET(req: NextRequest) {
+  const denied = requireAdmin(req);
+  if (denied) return denied;
+
+  try {
+    return NextResponse.json({ flags: await getFlags() });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }

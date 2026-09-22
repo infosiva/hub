@@ -23,6 +23,14 @@ export default function AdminCodesPage() {
   const [settingsLoading, setSettingsLoading] = useState(true);
   const [togglingProject, setTogglingProject] = useState<string | null>(null);
 
+  const [logoProject, setLogoProject] = useState(SITES[0]?.id ?? "");
+  const [logos, setLogos] = useState<Record<string, { url: string; source: string } | null>>({});
+  const [logoMode, setLogoMode] = useState<"assign" | "create">("assign");
+  const [logoInput, setLogoInput] = useState("");
+  const [logoAccent, setLogoAccent] = useState("");
+  const [logoBusy, setLogoBusy] = useState(false);
+  const [logoError, setLogoError] = useState("");
+
   useEffect(() => {
     fetch("/api/admin-codes/settings")
       .then((r) => r.json())
@@ -51,6 +59,37 @@ export default function AdminCodesPage() {
       setGuestEnabled((prev) => ({ ...prev, [id]: !next }));
     } finally {
       setTogglingProject(null);
+    }
+  }
+
+  useEffect(() => {
+    fetch(`/api/logo?siteId=${logoProject}`)
+      .then((r) => r.json())
+      .then((data) => setLogos((prev) => ({ ...prev, [logoProject]: data.logo ?? null })))
+      .catch(() => {});
+  }, [logoProject]);
+
+  async function submitLogo() {
+    setLogoBusy(true);
+    setLogoError("");
+    try {
+      const body =
+        logoMode === "assign"
+          ? { siteId: logoProject, mode: "assign", url: logoInput }
+          : { siteId: logoProject, mode: "create", prompt: logoInput, accent: logoAccent || undefined };
+      const res = await fetch("/api/logo", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "failed");
+      setLogos((prev) => ({ ...prev, [logoProject]: data.logo }));
+      setLogoInput("");
+    } catch (e) {
+      setLogoError(e instanceof Error ? e.message : "failed");
+    } finally {
+      setLogoBusy(false);
     }
   }
 
@@ -197,6 +236,71 @@ export default function AdminCodesPage() {
           })}
         </div>
       )}
+
+      <hr style={{ margin: "32px 0", border: "none", borderTop: "1px solid #eee" }} />
+
+      <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 4 }}>Logo — per project</h2>
+      <p style={{ color: "#666", fontSize: 13, marginBottom: 16 }}>
+        Assign an existing logo URL, or generate a new one via fal.ai.
+      </p>
+
+      <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
+        <select
+          value={logoProject}
+          onChange={(e) => setLogoProject(e.target.value)}
+          style={{ padding: "6px 10px", borderRadius: 6, border: "1px solid #ccc" }}
+        >
+          {SITES.map((s) => (
+            <option key={s.id} value={s.id}>{s.name}</option>
+          ))}
+        </select>
+
+        <select
+          value={logoMode}
+          onChange={(e) => setLogoMode(e.target.value as "assign" | "create")}
+          style={{ padding: "6px 10px", borderRadius: 6, border: "1px solid #ccc" }}
+        >
+          <option value="assign">Assign existing URL</option>
+          <option value="create">Generate new</option>
+        </select>
+      </div>
+
+      {logos[logoProject]?.url && (
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+          <img src={logos[logoProject]!.url} alt="" style={{ width: 40, height: 40, borderRadius: 8, border: "1px solid #eee" }} />
+          <span style={{ fontSize: 12, color: "#999" }}>
+            current ({logos[logoProject]!.source})
+          </span>
+        </div>
+      )}
+
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <input
+          value={logoInput}
+          onChange={(e) => setLogoInput(e.target.value)}
+          placeholder={logoMode === "assign" ? "https://.../logo.png" : "describe the mark, e.g. 'geometric wave icon'"}
+          style={{ flex: 1, minWidth: 240, padding: "6px 10px", borderRadius: 6, border: "1px solid #ccc" }}
+        />
+        {logoMode === "create" && (
+          <input
+            value={logoAccent}
+            onChange={(e) => setLogoAccent(e.target.value)}
+            placeholder="#2563eb (accent, optional)"
+            style={{ width: 160, padding: "6px 10px", borderRadius: 6, border: "1px solid #ccc" }}
+          />
+        )}
+        <button
+          onClick={submitLogo}
+          disabled={logoBusy || !logoInput}
+          style={{
+            padding: "6px 16px", borderRadius: 6, border: "none", cursor: "pointer",
+            background: "#111", color: "#fff", opacity: logoBusy || !logoInput ? 0.5 : 1,
+          }}
+        >
+          {logoBusy ? "Saving…" : logoMode === "assign" ? "Assign" : "Generate"}
+        </button>
+      </div>
+      {logoError && <p style={{ color: "#dc2626", fontSize: 12, marginTop: 8 }}>{logoError}</p>}
     </div>
   );
 }

@@ -310,9 +310,6 @@ export default function ThemesPage() {
               Colors · Widgets · Layout · Copy · Fonts — all live via Edge Config, no deploy needed.
             </p>
           </div>
-          <div className="text-xs text-white/30 bg-white/5 rounded-lg px-3 py-2">
-            Password: <span className="text-white/60 font-mono">siva2026</span>
-          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">

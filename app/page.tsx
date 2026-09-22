@@ -20,7 +20,10 @@ async function fetchStatus(): Promise<Record<string, { status: SiteStatus; laten
     const base = process.env.VERCEL_URL
       ? `https://${process.env.VERCEL_URL}`
       : "http://localhost:3000";
-    const res = await fetch(`${base}/api/status`, { cache: "no-store" });
+    const res = await fetch(`${base}/api/status`, {
+      cache: "no-store",
+      headers: { "x-hub-internal": process.env.DASHBOARD_PASSWORD ?? "" },
+    });
     if (!res.ok) return {};
     const data = await res.json();
     const map: Record<string, { status: SiteStatus; latency: number; statusCode: number }> = {};
@@ -38,7 +41,10 @@ async function fetchAnalytics(): Promise<Record<string, { visitors: number; page
     const base = process.env.VERCEL_URL
       ? `https://${process.env.VERCEL_URL}`
       : "http://localhost:3000";
-    const res = await fetch(`${base}/api/analytics`, { next: { revalidate: 3600 } });
+    const res = await fetch(`${base}/api/analytics`, {
+      next: { revalidate: 3600 },
+      headers: { "x-hub-internal": process.env.DASHBOARD_PASSWORD ?? "" },
+    });
     if (!res.ok) return {};
     const data = await res.json();
     const map: Record<string, { visitors: number; pageviews: number }> = {};
@@ -56,7 +62,10 @@ async function fetchHealth(): Promise<Record<string, HealthIssue[]>> {
     const base = process.env.VERCEL_URL
       ? `https://${process.env.VERCEL_URL}`
       : "http://localhost:3000";
-    const res = await fetch(`${base}/api/health`, { cache: "no-store" });
+    const res = await fetch(`${base}/api/health`, {
+      cache: "no-store",
+      headers: { "x-hub-internal": process.env.DASHBOARD_PASSWORD ?? "" },
+    });
     if (!res.ok) return {};
     const data = await res.json();
     const map: Record<string, HealthIssue[]> = {};

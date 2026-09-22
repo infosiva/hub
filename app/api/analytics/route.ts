@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { SITES } from "@/lib/sites";
+import { requireAdmin } from "@/lib/auth-guard";
 
 export const revalidate = 3600; // cache 1h
 
@@ -41,7 +42,11 @@ async function fetchProjectAnalytics(projectName: string): Promise<{ visitors: n
   }
 }
 
-export async function GET() {
+// Admin-only — leaks the full internal project roster + visitor counts otherwise.
+export async function GET(req: NextRequest) {
+  const denied = requireAdmin(req);
+  if (denied) return denied;
+
   const results = await Promise.allSettled(
     SITES.map(async (site) => {
       const stats = await fetchProjectAnalytics(site.vercelProject);

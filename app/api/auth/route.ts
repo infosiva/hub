@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const PASSWORD = process.env.DASHBOARD_PASSWORD ?? "siva2026";
+const PASSWORD = process.env.DASHBOARD_PASSWORD ?? "";
 const COOKIE = "hub_auth";
 
 export async function POST(req: NextRequest) {
+  if (!PASSWORD) return NextResponse.json({ ok: false }, { status: 500 });
   const { password } = await req.json();
   if (password === PASSWORD) {
     const res = NextResponse.json({ ok: true });

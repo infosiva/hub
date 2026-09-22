@@ -89,6 +89,7 @@ async function triggerVercelRedeploy(projectName: string): Promise<boolean> {
 }
 
 async function sendTelegram(message: string): Promise<void> {
+  if (process.env.TELEGRAM_NOTIFICATIONS_DISABLED === 'true') return;
   if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return;
   await fetch(
     `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
