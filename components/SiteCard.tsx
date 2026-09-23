@@ -43,11 +43,15 @@ export default function SiteCard({
   statusInfo,
   analytics,
   healthIssues,
+  pinned,
+  onTogglePin,
 }: {
   site: Site;
   statusInfo: { status: SiteStatus; latency: number; statusCode: number; errorType?: string | null };
   analytics: { visitors: number; pageviews: number };
   healthIssues?: { type: string; severity: string; message: string }[];
+  pinned?: boolean;
+  onTogglePin?: () => void;
 }) {
   const [tab, setTab] = useState<Tab>("overview");
   const [toggles, setToggles] = useState<Record<string, boolean>>(
@@ -175,6 +179,15 @@ export default function SiteCard({
         </div>
         <div className="flex flex-col items-end gap-1 shrink-0">
           <div className="flex items-center gap-1.5">
+            {onTogglePin && (
+              <button
+                onClick={onTogglePin}
+                title={pinned ? "Unpin" : "Pin to top"}
+                className={`text-xs leading-none transition-colors ${pinned ? "text-amber-400" : "text-zinc-600 hover:text-zinc-400"}`}
+              >
+                {pinned ? "★" : "☆"}
+              </button>
+            )}
             {errorCount > 0 && (
               <span className="text-[10px] bg-red-500/20 text-red-400 px-1.5 py-0.5 rounded font-medium">
                 {errorCount} err

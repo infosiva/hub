@@ -1,5 +1,5 @@
 import { SITES, CATEGORIES, type SiteStatus } from "@/lib/sites";
-import SiteCard from "@/components/SiteCard";
+import DashboardGrid from "@/components/DashboardGrid";
 import ProvidersPanel from "@/components/ProvidersPanel";
 import GlobalContentPanel from "@/components/GlobalContentPanel";
 import GlobalFlagsPanel from "@/components/GlobalFlagsPanel";
@@ -192,29 +192,13 @@ export default async function DashboardPage() {
       {/* AI Providers Panel */}
       <ProvidersPanel />
 
-      {CATEGORIES.map((cat) => {
-        const catSites = SITES.filter((s) => s.category === cat);
-        if (catSites.length === 0) return null;
-        return (
-          <section key={cat} className="mb-10">
-            <h2 className="text-zinc-400 text-xs font-semibold uppercase tracking-widest mb-3 flex items-center gap-2">
-              <span>{cat}</span>
-              <span className="text-zinc-600">({catSites.length})</span>
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
-              {catSites.map((site) => (
-                <SiteCard
-                  key={site.id}
-                  site={site}
-                  statusInfo={statusMap[site.id] ?? { status: "unknown", latency: 0, statusCode: 0 }}
-                  analytics={analyticsMap[site.id] ?? { visitors: 0, pageviews: 0 }}
-                  healthIssues={healthMap[site.id] ?? []}
-                />
-              ))}
-            </div>
-          </section>
-        );
-      })}
+      <DashboardGrid
+        categories={CATEGORIES}
+        sites={SITES}
+        statusMap={statusMap}
+        analyticsMap={analyticsMap}
+        healthMap={healthMap}
+      />
 
       {/* Add project */}
       <div className="flex justify-center pb-4">
