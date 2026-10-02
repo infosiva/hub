@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth-guard";
-import { checkChain } from "@/lib/aiChainHealth";
+import { checkChain, openRouterQuota } from "@/lib/aiChainHealth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -16,13 +16,19 @@ export async function GET(req: NextRequest) {
     if (denied) return denied;
   }
 
-  const results = await checkChain();
+  const [results, openrouter] = await Promise.all([checkChain(), openRouterQuota()]);
   const failed = results.filter((r) => !r.ok);
+  const quotaLow = !!openrouter && openrouter.remaining < openrouter.limit * 0.2;
+  const spent = !!openrouter && openrouter.spentUsd > 0;
   const providersDown = [...new Set(results.map((r) => r.provider))]
     .filter((p) => results.filter((r) => r.provider === p).every((r) => !r.ok));
 
-  if (isCron && failed.length && TG_TOKEN && TG_CHAT) {
-    const lines = failed.map((f) => `• ${f.provider}/${f.model}: ${f.error}`).join("\n");
+  if (isCron && (failed.length || quotaLow || spent) && TG_TOKEN && TG_CHAT) {
+    const lines = [
+      ...failed.map((f) => `• ${f.provider}/${f.model}: ${f.error}`),
+      ...(quotaLow ? [`• OpenRouter free quota low: ${openrouter!.remaining}/${openrouter!.limit} left today`] : []),
+      ...(spent ? [`• OpenRouter key has SPENT $${openrouter!.spentUsd.toFixed(4)} (should be $0)`] : []),
+    ].join("\n");
     await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -33,5 +39,5 @@ export async function GET(req: NextRequest) {
     }).catch(() => {});
   }
 
-  return NextResponse.json({ checkedAt: new Date().toISOString(), results, providersDown });
+  return NextResponse.json({ checkedAt: new Date().toISOString(), results, providersDown, openrouter });
 }

@@ -3,7 +3,10 @@
 import { useState, useEffect, useCallback } from "react";
 
 type ModelHealth = { provider: string; model: string; ok: boolean; ms: number; error?: string };
-type Report = { checkedAt: string; results: ModelHealth[]; providersDown: string[] };
+type Report = {
+  checkedAt: string; results: ModelHealth[]; providersDown: string[];
+  openrouter: { used: number; limit: number; remaining: number; spentUsd: number } | null;
+};
 
 export default function AiHealthPanel() {
   const [report, setReport] = useState<Report | null>(null);
@@ -49,6 +52,19 @@ export default function AiHealthPanel() {
       </div>
 
       {error && <p className="px-5 pb-4 text-xs text-red-400">Check failed: {error}</p>}
+
+      {report?.openrouter && (
+        <p className="px-5 pb-3 text-xs text-zinc-400">
+          OpenRouter free quota today:{" "}
+          <span className={report.openrouter.remaining < report.openrouter.limit * 0.2 ? "text-amber-400" : "text-zinc-200"}>
+            {report.openrouter.used}/{report.openrouter.limit} used
+          </span>
+          {" · "}spent{" "}
+          <span className={report.openrouter.spentUsd > 0 ? "text-red-400" : "text-zinc-200"}>
+            ${report.openrouter.spentUsd.toFixed(2)}
+          </span>
+        </p>
+      )}
 
       {report && (
         <div className="overflow-x-auto border-t border-white/[0.06]">

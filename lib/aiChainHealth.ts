@@ -40,6 +40,26 @@ async function checkModel(base: string, key: string, provider: string, model: st
   }
 }
 
+export type OpenRouterQuota = { used: number; limit: number; remaining: number; spentUsd: number };
+
+// Free :free requests used today + $ spent on this key. Shows whether the sites ever lean on OpenRouter (and if $10 credit is worth it).
+export async function openRouterQuota(): Promise<OpenRouterQuota | null> {
+  const key = process.env.OPENROUTER_API_KEY;
+  if (!key) return null;
+  try {
+    const res = await fetch("https://openrouter.ai/api/v1/key", {
+      headers: { Authorization: `Bearer ${key}` }, signal: AbortSignal.timeout(10_000), cache: "no-store",
+    });
+    if (!res.ok) return null;
+    const d = (await res.json())?.data;
+    const f = d?.free_model_daily_requests;
+    if (!f) return null;
+    return { used: f.used, limit: f.limit, remaining: f.remaining, spentUsd: d.usage ?? 0 };
+  } catch {
+    return null;
+  }
+}
+
 export async function checkChain(): Promise<ModelHealth[]> {
   const jobs = CHAIN.flatMap(({ provider, base, keyEnv, models }) => {
     const key = process.env[keyEnv];
