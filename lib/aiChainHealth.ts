@@ -8,6 +8,8 @@ export const CHAIN = [
     models: ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-3.5-flash-lite"] },
   { provider: "nvidia", base: "https://integrate.api.nvidia.com/v1", keyEnv: "NVIDIA_API_KEY",
     models: ["nvidia/nemotron-3-super-120b-a12b", "nvidia/nemotron-3.5-lightning-30b-a3b"] },
+  { provider: "openrouter", base: "https://openrouter.ai/api/v1", keyEnv: "OPENROUTER_API_KEY",
+    models: ["nvidia/nemotron-3-super-120b-a12b:free", "inclusionai/ling-3.0-flash-sante:free"] },
   { provider: "cerebras", base: "https://api.cerebras.ai/v1", keyEnv: "CEREBRAS_API_KEY",
     models: ["gpt-oss-120b"] },
 ] as const;
