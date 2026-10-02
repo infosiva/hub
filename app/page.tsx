@@ -8,6 +8,7 @@ import AiDigestPanel from "@/components/AiDigestPanel";
 import LayoutPicker from "@/components/LayoutPicker";
 import DownSiteAlert from "@/components/DownSiteAlert";
 import RunAllAuditsButton from "@/components/RunAllAuditsButton";
+import { DevStackPanel } from "@/components/DevStackPanel";
 
 interface HealthIssue {
   type: string;
@@ -193,6 +194,7 @@ export default async function DashboardPage() {
       {/* AI Providers Panel */}
       <AiHealthPanel />
       <ProvidersPanel />
+      <DevStackPanel />
 
       <DashboardGrid
         categories={CATEGORIES}
