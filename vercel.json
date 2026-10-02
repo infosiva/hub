@@ -5,6 +5,10 @@
       "schedule": "0 8 * * *"
     },
     {
+      "path": "/api/ai-health",
+      "schedule": "0 */6 * * *"
+    },
+    {
       "path": "/api/cron/domain-check",
       "schedule": "0 * * * *"
     },

@@ -1,6 +1,7 @@
 import { SITES, CATEGORIES, type SiteStatus } from "@/lib/sites";
 import DashboardGrid from "@/components/DashboardGrid";
 import ProvidersPanel from "@/components/ProvidersPanel";
+import AiHealthPanel from "@/components/AiHealthPanel";
 import GlobalContentPanel from "@/components/GlobalContentPanel";
 import GlobalFlagsPanel from "@/components/GlobalFlagsPanel";
 import AiDigestPanel from "@/components/AiDigestPanel";
@@ -190,6 +191,7 @@ export default async function DashboardPage() {
       <GlobalContentPanel />
 
       {/* AI Providers Panel */}
+      <AiHealthPanel />
       <ProvidersPanel />
 
       <DashboardGrid
