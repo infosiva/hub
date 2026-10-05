@@ -1,3 +1,4 @@
+import { BlurText } from "@infosiva/shared-ui/modern";
 import { SITES, CATEGORIES, type SiteStatus } from "@/lib/sites";
 import DashboardGrid from "@/components/DashboardGrid";
 import ProvidersPanel from "@/components/ProvidersPanel";
@@ -165,7 +166,7 @@ export default async function DashboardPage() {
       {/* header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-white font-bold text-2xl tracking-tight">🛸 Control Portal</h1>
+          <BlurText as="h1" text="🛸 Control Portal" className="text-white font-bold text-2xl tracking-tight" />
           <p className="text-zinc-500 text-sm mt-0.5">
             {SITES.length} products · feature toggles · AI providers · live health audit
           </p>

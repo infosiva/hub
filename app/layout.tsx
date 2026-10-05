@@ -4,6 +4,7 @@ import "./globals.css";
 import FeedbackWidget from "@/components/FeedbackWidget";
 import ChatBot from "@/components/ChatBot";
 
+import { MotionProvider } from "@infosiva/shared-ui/modern";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -26,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         })}} />
       </head>
       <body className={`${inter.className} min-h-full flex flex-col`}>
-        {children}
+        <MotionProvider>{children}</MotionProvider>
         <FeedbackWidget siteName="Hub" position="left" />
         <ChatBot />
       </body>
