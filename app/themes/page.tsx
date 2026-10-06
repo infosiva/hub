@@ -62,6 +62,12 @@ const FONT_OPTIONS = [
   "Outfit", "Manrope", "Geist", "Bricolage Grotesque",
 ];
 
+const ARCHETYPE_IDS = [
+  "", "bento-showcase", "tool-first-workbench", "story-scroll", "directory-marketplace", "kanban-board",
+  "map-first", "docs-knowledge", "compare-pricing", "media-gallery",
+];
+const BG_ANIMATIONS = ["none", "aurora", "mesh", "dotgrid", "gradient-shift"];
+
 interface SiteTheme {
   background: string;
   primary: string;
@@ -71,7 +77,17 @@ interface SiteTheme {
   layout: {
     hideSections?: string[];
     heroVariant?: string;
+    archetype?: string;
+    bgAnimation?: string;
+    bgSpeed?: number;
   };
+  design?: {
+    dials?: { variance?: number; motion?: number; density?: number };
+    paletteShared?: boolean;
+    templateOk?: boolean;
+    brief?: string;
+  };
+  analytics?: { ga4Id?: string };
   copy: {
     headline?: string;
     subheadline?: string;
@@ -154,7 +170,7 @@ export default function ThemesPage() {
   const [removing, setRemoving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"colors" | "widgets" | "layout" | "copy" | "font" | "collisions">("colors");
+  const [activeTab, setActiveTab] = useState<"colors" | "widgets" | "layout" | "design" | "tracking" | "copy" | "font" | "collisions">("colors");
   const [standardRows, setStandardRows] = useState<DesignStandardRow[]>([]);
   const [standardSyncedAt, setStandardSyncedAt] = useState<number | null>(null);
 
@@ -225,6 +241,26 @@ export default function ThemesPage() {
     setLayoutField("hideSections", next);
   }
 
+  function setDesignField(key: string, value: unknown) {
+    setThemes((prev) => {
+      const existing = { ...getDefault(selected), ...prev[selected] };
+      return { ...prev, [selected]: { ...existing, design: { ...existing.design, [key]: value } } };
+    });
+    setSaved(false);
+  }
+
+  function setDial(key: string, value: number) {
+    setDesignField("dials", { ...(current.design?.dials ?? {}), [key]: value });
+  }
+
+  function setGa4(value: string) {
+    setThemes((prev) => {
+      const existing = { ...getDefault(selected), ...prev[selected] };
+      return { ...prev, [selected]: { ...existing, analytics: { ga4Id: value.trim().toUpperCase() } } };
+    });
+    setSaved(false);
+  }
+
   function setCopyField(key: string, value: string) {
     setThemes((prev) => {
       const existing = { ...getDefault(selected), ...prev[selected] };
@@ -293,6 +329,8 @@ export default function ThemesPage() {
     { id: "colors",  label: "Colors" },
     { id: "widgets", label: "Widgets" },
     { id: "layout",  label: "Layout" },
+    { id: "design",  label: "Design" },
+    { id: "tracking", label: "Tracking" },
     { id: "copy",    label: "Copy" },
     { id: "font",    label: "Fonts" },
     { id: "collisions", label: "Collision Audit" },
@@ -581,6 +619,72 @@ export default function ThemesPage() {
                   </div>
                 </div>
               </>
+            )}
+
+            {/* Design tab */}
+            {activeTab === "design" && (
+              <>
+                <div className="bg-white/[0.04] border border-white/[0.08] rounded-xl p-5 space-y-4">
+                  <h3 className="text-sm font-semibold text-white/70">Layout archetype</h3>
+                  <p className="text-xs text-white/40">Empty = auto-picked from the project brief. Set to force one (wins over auto).</p>
+                  <select
+                    value={current.layout?.archetype ?? ""}
+                    onChange={(e) => setLayoutField("archetype", e.target.value || undefined)}
+                    className="w-full bg-white/5 border border-white/10 text-white text-sm rounded-lg px-3 py-2.5"
+                  >
+                    {ARCHETYPE_IDS.map((a) => <option key={a} value={a} className="bg-[#07060f]">{a || "auto"}</option>)}
+                  </select>
+                  <h3 className="text-sm font-semibold text-white/70 pt-2">Background animation</h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                    {BG_ANIMATIONS.map((a) => (
+                      <button key={a} onClick={() => setLayoutField("bgAnimation", a)}
+                        className={`px-3 py-2 rounded-lg text-sm border transition-colors ${
+                          (current.layout?.bgAnimation ?? "aurora") === a
+                            ? "bg-violet-600/30 border-violet-500/50 text-white"
+                            : "border-white/10 text-white/60 hover:border-white/20"}`}>{a}</button>
+                    ))}
+                  </div>
+                  <label className="text-xs text-white/50 block">Animation speed ({current.layout?.bgSpeed ?? 5}/10)</label>
+                  <input type="range" min={1} max={10} value={current.layout?.bgSpeed ?? 5}
+                    onChange={(e) => setLayoutField("bgSpeed", Number(e.target.value))} className="w-full" />
+                </div>
+                <div className="bg-white/[0.04] border border-white/[0.08] rounded-xl p-5 space-y-3">
+                  <h3 className="text-sm font-semibold text-white/70">Dials (1-10)</h3>
+                  {(["variance", "motion", "density"] as const).map((k) => (
+                    <div key={k}>
+                      <label className="text-xs text-white/50 block">{k} ({current.design?.dials?.[k] ?? 5})</label>
+                      <input type="range" min={1} max={10} value={current.design?.dials?.[k] ?? 5}
+                        onChange={(e) => setDial(k, Number(e.target.value))} className="w-full" />
+                    </div>
+                  ))}
+                  <label className="flex items-center gap-2 text-sm text-white/70">
+                    <input type="checkbox" checked={!!current.design?.paletteShared}
+                      onChange={(e) => setDesignField("paletteShared", e.target.checked)} /> Allow shared accent (skip uniqueness check)
+                  </label>
+                  <label className="flex items-center gap-2 text-sm text-white/70">
+                    <input type="checkbox" checked={!!current.design?.templateOk}
+                      onChange={(e) => setDesignField("templateOk", e.target.checked)} /> Allow stock template look
+                  </label>
+                  <label className="text-xs text-white/50 block">Extra design brief</label>
+                  <textarea value={current.design?.brief ?? ""} rows={3}
+                    onChange={(e) => setDesignField("brief", e.target.value)}
+                    className="w-full bg-white/5 border border-white/10 text-white text-sm rounded-lg px-3 py-2.5" />
+                </div>
+              </>
+            )}
+
+            {/* Tracking tab */}
+            {activeTab === "tracking" && (
+              <div className="bg-white/[0.04] border border-white/[0.08] rounded-xl p-5 space-y-3">
+                <h3 className="text-sm font-semibold text-white/70">Google Analytics 4</h3>
+                <p className="text-xs text-white/40">Off until a valid ID is set. Consent denied by default, IP anonymised, anonymous events only. Complements @vercel/analytics + PostHog.</p>
+                <input type="text" value={current.analytics?.ga4Id ?? ""} onChange={(e) => setGa4(e.target.value)}
+                  placeholder="G-XXXXXXXXXX"
+                  className="w-full bg-white/5 border border-white/10 text-white text-sm rounded-lg px-3 py-2.5 outline-none focus:border-violet-500" />
+                {current.analytics?.ga4Id && !/^G-[A-Z0-9]{6,12}$/.test(current.analytics.ga4Id) && (
+                  <p className="text-xs text-red-300">Invalid ID format.</p>
+                )}
+              </div>
             )}
 
             {/* Copy tab */}

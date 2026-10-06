@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth-guard";
+import { accentCollisions } from "@/lib/palette-guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -57,6 +58,25 @@ export async function PATCH(req: NextRequest) {
   const vercelToken = process.env.VERCEL_TOKEN;
   if (!edgeConfigId || !vercelToken) {
     return NextResponse.json({ error: "EDGE_CONFIG_ID or VERCEL_TOKEN not set" }, { status: 500 });
+  }
+
+  // Accent uniqueness: reject a primary too close to another site's, unless design.paletteShared.
+  const cur = await fetch(`https://api.vercel.com/v1/edge-config/${edgeConfigId}/items`, {
+    headers: { Authorization: `Bearer ${vercelToken}` },
+    cache: "no-store",
+  });
+  if (cur.ok) {
+    const others: Record<string, { primary?: string; design?: { paletteShared?: boolean } }> = {};
+    for (const it of (await cur.json()).items ?? []) {
+      if (it.key?.startsWith("theme_")) others[it.key.slice(6)] = it.value;
+    }
+    const clash = accentCollisions(siteId, theme, others);
+    if (clash.length) {
+      return NextResponse.json(
+        { error: `primary too close to: ${clash.join(", ")}. Pick another or set design.paletteShared=true.` },
+        { status: 409 },
+      );
+    }
   }
 
   const key = `theme_${siteId}`;
