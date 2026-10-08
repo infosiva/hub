@@ -147,10 +147,19 @@ function openD(i){const r=view[i];if(!r)return;lastF=document.activeElement;
  const wa=waNum(r.phone),f=[['Category',r.category],['Address',r.address],['Phone',r.phone],['Rating',r.rating?`${r.rating} (${r.review_count} reviews)`:''],['Website',r.website?`<a href="${esc(r.website)}" target="_blank" rel="noopener">${esc(r.website)}</a>`:'none found',1],['Maps',r.maps_url?`<a href="${esc(r.maps_url)}" target="_blank" rel="noopener">Open in Google Maps</a>`:'',1],['Why graded',esc(String(r.reasons||'').split('; ').join(' / ')||'-'),1]];
  $('dbody').innerHTML=`${r.shot?`<img class="shot" alt="Website at 375px" src="${API}${r.shot}" onerror="this.remove()">`:''}<dl>${f.map(([k,v,h])=>`<dt>${k}</dt><dd>${h?v:esc(v||'-')}</dd>`).join('')}</dl>
  <div><label for="pt">Message (edit before sending)</label><textarea id="pt">${esc(pitch(r))}</textarea></div>
- <div class="acts"><button class="btn" id="cp">Copy message</button>${wa?`<a class="ghost" id="wa" target="_blank" rel="noopener" href="#">WhatsApp</a>`:''}${r.phone?`<a class="ghost" href="tel:${esc(r.phone.replace(/[^\d+]/g,''))}">Call</a>`:''}</div><div class="why">Nothing is sent from here. WhatsApp opens with the text ready; you press send. No email is collected by the scrape.</div>`;
+ <div class="acts"><button class="btn" id="cp">Copy message</button>${wa?`<a class="ghost" id="wa" target="_blank" rel="noopener" href="#">WhatsApp</a>`:''}${r.phone?`<a class="ghost" href="tel:${esc(r.phone.replace(/[^\d+]/g,''))}">Call</a>`:''}</div><div class="acts"><button class="btn" id="pb">Build proposal + email</button></div><div id="po"></div><div class="why">Nothing is sent from here. WhatsApp opens with the text ready; you press send. No email is collected by the scrape.</div>`;
  const wl=$('wa'),pt=$('pt');if(wl){const u=()=>wl.href=`https://wa.me/${wa}?text=${encodeURIComponent(pt.value)}`;u();pt.oninput=u}
  $('cp').onclick=async()=>{try{await navigator.clipboard.writeText(pt.value);$('cp').textContent='Copied'}catch{pt.select();$('cp').textContent='Select + copy'}setTimeout(()=>$('cp').textContent='Copy message',1500)};
+ $('pb').onclick=()=>prop(rows.indexOf(r));
  $('dr').classList.add('open');$('dr').setAttribute('aria-hidden','false');$('dx').focus()}
+async function prop(i){const b=$('pb');b.disabled=true;b.textContent='Building (about 30s)…';
+ try{const r=await fetch(API+'/proposal',{method:'POST',body:JSON.stringify({job:jobId,idx:i})}),o=await r.json();if(!r.ok)throw new Error(o.error);
+  const e=o.email,v=o.validation,c=o.company;
+  $('po').innerHTML=`<dl><dt>Checks</dt><dd>${v.checks.map(k=>`${k.ok===null?'?':k.ok?'✓':'✗'} ${esc(k.k)}`).join('<br>')||'nothing to check (no site found)'}</dd><dt>Confidence</dt><dd>${Math.round(v.confidence*100)}%</dd><dt>Company</dt><dd>${esc(c.status)}${c.legalName?' · '+esc(c.legalName):''}${c.note?' · '+esc(c.note):''}</dd></dl>
+  <div class="acts"><a class="ghost" target="_blank" rel="noopener" href="${API}${o.url}">Open proposal</a><a class="ghost" href="${API}${o.url}?dl=1">Download</a></div>
+  ${e.allowed?`<label for="es">Subject</label><input id="es" value="${esc(e.subject)}"><label for="eb">Email (edit before sending)</label><textarea id="eb">${esc(e.body)}</textarea><div class="acts"><button class="btn" id="ec">Copy email</button></div>`:`<div class="why">${esc(e.reason)}</div>`}`;
+  const ec=$('ec');if(ec)ec.onclick=async()=>{try{await navigator.clipboard.writeText($('es').value+'\n\n'+$('eb').value);ec.textContent='Copied'}catch{$('eb').select()}};
+  $('po').scrollIntoView({block:'nearest',behavior:'smooth'});b.textContent='Rebuild proposal'}catch(x){$('po').innerHTML=`<div class="why">${esc(x.message)}</div>`;b.textContent='Build proposal + email'}b.disabled=false}
 function closeD(){$('dr').classList.remove('open');$('dr').setAttribute('aria-hidden','true');lastF&&lastF.focus()}
 $('dx').onclick=closeD;document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('dr').classList.contains('open'))closeD()});
 $('go').onclick=async()=>{
