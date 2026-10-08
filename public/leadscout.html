@@ -72,6 +72,7 @@ a{color:var(--b)}
 dl{display:grid;grid-template-columns:96px 1fr;gap:6px 10px;margin:0;font-size:13px}
 dt{color:var(--mute)}dd{margin:0;overflow-wrap:anywhere}
 .shot{width:100%;max-height:300px;object-fit:cover;object-position:top;border:1px solid var(--line);border-radius:10px}
+select{width:100%;height:44px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);padding:0 10px;font:inherit}
 textarea{width:100%;min-height:210px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);padding:10px 12px;font:inherit;resize:vertical}
 textarea:focus-visible{outline:2px solid var(--b);outline-offset:2px}
 .acts{display:flex;flex-wrap:wrap;gap:8px}
@@ -108,7 +109,7 @@ tbody tr[tabindex]:focus-visible{outline:2px solid var(--b);outline-offset:-2px}
     <button class="chip unknown" data-f="unknown" aria-pressed="true"><span class="dot"></span>Unknown <b id="n-unknown">0</b></button>
     <button class="chip ok" data-f="ok" aria-pressed="false"><span class="dot"></span>OK <b id="n-ok">0</b></button>
    </div>
-   <a class="ghost" id="csv" href="#" style="display:none">Download CSV</a>
+   <button class="chip" id="hd" aria-pressed="true">Hide contacted</button><a class="ghost" id="csv" href="#" style="display:none">Download CSV</a>
   </div>
   <div id="prog" style="display:none"><div class="bar"><i id="fill"></i></div><div class="stage" id="stage" aria-live="polite"></div></div>
   <div class="table" id="tw"><div class="empty"><div class="demo" aria-hidden="true"><i></i><i></i><i></i></div>Set a business type and location, pick free mode or approve the spend, and run. Each site is opened at 375px and graded weak, none or ok.</div></div>
@@ -120,19 +121,22 @@ tbody tr[tabindex]:focus-visible{outline:2px solid var(--b);outline-offset:-2px}
 </aside>
 <script>
 const API=location.pathname.startsWith('/leadscout')?'/api/leadscout':'/api';
-const $=id=>document.getElementById(id);let rows=[],view=[],ctx={niche:'',loc:''},jobId=null,filt={weak:1,none:1,unknown:1,ok:0};
+const $=id=>document.getElementById(id);let OUT={},hideDone=1,rows=[],view=[],ctx={niche:'',loc:''},jobId=null,filt={weak:1,none:1,unknown:1,ok:0};
 const mode=()=>{const f=$('free').checked;$('ok').closest('label').style.display=f?'none':'';$('go').disabled=f?false:!$('ok').checked;$('cl').textContent=f?'Cost (OpenStreetMap)':'Estimated Apify cost';if(f){$('cost').textContent='$0.00';$('msg').textContent=''}else upd()};
 const upd=async()=>{if($('free').checked)return;try{const r=await(await fetch(`${API}/estimate?max=${$('max').value}&skip=${$('skip').checked?1:0}`)).json();$('cost').textContent='$'+r.usd.toFixed(2);if(!r.tokenSet)$('msg').textContent='APIFY_TOKEN missing in leadscout/.env'}catch{}};
 try{$('me').value=localStorage.me||''}catch{}$('me').oninput=()=>{try{localStorage.me=$('me').value}catch{}};
 ['max','skip'].forEach(i=>$(i).addEventListener('input',upd));upd();
 $('ok').onchange=()=>$('go').disabled=!$('ok').checked;$('free').onchange=mode;try{$('free').checked=localStorage.free!=='0';mode()}catch{}$('free').addEventListener('change',()=>{try{localStorage.free=$('free').checked?'1':'0'}catch{}});
 document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{filt[c.dataset.f]^=1;c.setAttribute('aria-pressed',!!filt[c.dataset.f]);draw()});
+const LB={drafted:'drafted',sent:'sent',replied:'replied',won:'won',not_interested:'not interested',do_not_contact:'do not contact'},DONE=['replied','won','not_interested','do_not_contact'];
+const key=r=>r.website?r.website.replace(/^https?:\/\/(www\.)?/,'').split('/')[0].toLowerCase():(r.name+'|'+r.address).toLowerCase();
+const loadO=async()=>{try{OUT=await(await fetch(API+'/outreach')).json()}catch{}};
 const esc=s=>String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
 function draw(){
  for(const k of['weak','none','unknown','ok'])$('n-'+k).textContent=rows.filter(r=>r.site_status===k).length;
  if(!rows.length)return;
- const v=view=rows.filter(r=>filt[r.site_status]);
- $('tw').innerHTML=`<table><thead><tr><th>Status</th><th>Name</th><th>Rating</th><th>Phone</th><th>Website / why</th></tr></thead><tbody>${v.map((r,i)=>`<tr class="in" tabindex="0" data-i="${i}" style="animation-delay:${Math.min(i,12)*25}ms"><td><span class="pill ${r.site_status}">${r.site_status}</span></td><td><b>${esc(r.name)}</b><div class="why">${esc(r.address)}</div></td><td>${esc(r.rating)} <span class="why">(${esc(r.review_count)})</span></td><td>${esc(r.phone)}</td><td>${r.website?`<a href="${esc(r.website)}" target="_blank" rel="noopener">${esc(r.website.replace(/^https?:\/\/(www\.)?/,'').slice(0,34))}</a>`:'-'}<div class="why">${esc(r.reasons)}</div></td></tr>`).join('')}</tbody></table>`;
+ const v=view=rows.filter(r=>filt[r.site_status]&&!(hideDone&&DONE.includes(OUT[key(r)]?.status)));
+ $('tw').innerHTML=`<table><thead><tr><th>Status</th><th>Name</th><th>Rating</th><th>Phone</th><th>Website / why</th></tr></thead><tbody>${v.map((r,i)=>`<tr class="in" tabindex="0" data-i="${i}" style="animation-delay:${Math.min(i,12)*25}ms"><td><span class="pill ${r.site_status}">${r.site_status}</span>${OUT[key(r)]?`<div class="why">${LB[OUT[key(r)].status]||''}${OUT[key(r)].sent?' '+OUT[key(r)].sent.slice(0,10):''}</div>`:''}</td><td><b>${esc(r.name)}</b><div class="why">${esc(r.address)}</div></td><td>${esc(r.rating)} <span class="why">(${esc(r.review_count)})</span></td><td>${esc(r.phone)}</td><td>${r.website?`<a href="${esc(r.website)}" target="_blank" rel="noopener">${esc(r.website.replace(/^https?:\/\/(www\.)?/,'').slice(0,34))}</a>`:'-'}<div class="why">${esc(r.reasons)}</div></td></tr>`).join('')}</tbody></table>`;
  $('tw').querySelectorAll('tbody tr').forEach(t=>{t.onclick=e=>{if(e.target.closest('a'))return;openD(+t.dataset.i)};t.onkeydown=e=>{if(e.key==='Enter')openD(+t.dataset.i)}})}
 const waNum=p=>{let d=String(p||'').replace(/\D/g,'');if(d.startsWith('00'))d=d.slice(2);else if(d.startsWith('0'))d='44'+d.slice(1);return d.length>=10?d:''};
 function pitch(r){
@@ -147,10 +151,11 @@ function openD(i){const r=view[i];if(!r)return;lastF=document.activeElement;
  const wa=waNum(r.phone),f=[['Category',r.category],['Address',r.address],['Phone',r.phone],['Rating',r.rating?`${r.rating} (${r.review_count} reviews)`:''],['Website',r.website?`<a href="${esc(r.website)}" target="_blank" rel="noopener">${esc(r.website)}</a>`:'none found',1],['Maps',r.maps_url?`<a href="${esc(r.maps_url)}" target="_blank" rel="noopener">Open in Google Maps</a>`:'',1],['Why graded',esc(String(r.reasons||'').split('; ').join(' / ')||'-'),1]];
  $('dbody').innerHTML=`${r.shot?`<img class="shot" alt="Website at 375px" src="${API}${r.shot}" onerror="this.remove()">`:''}<dl>${f.map(([k,v,h])=>`<dt>${k}</dt><dd>${h?v:esc(v||'-')}</dd>`).join('')}</dl>
  <div><label for="pt">Message (edit before sending)</label><textarea id="pt">${esc(pitch(r))}</textarea></div>
- <div class="acts"><button class="btn" id="cp">Copy message</button>${wa?`<a class="ghost" id="wa" target="_blank" rel="noopener" href="#">WhatsApp</a>`:''}${r.phone?`<a class="ghost" href="tel:${esc(r.phone.replace(/[^\d+]/g,''))}">Call</a>`:''}</div><div class="acts"><button class="btn" id="pb">Build proposal + email</button></div><div id="po"></div><div class="why">Nothing is sent from here. WhatsApp opens with the text ready; you press send. No email is collected by the scrape.</div>`;
+ <div class="acts"><button class="btn" id="cp">Copy message</button>${wa?`<a class="ghost" id="wa" target="_blank" rel="noopener" href="#">WhatsApp</a>`:''}${r.phone?`<a class="ghost" href="tel:${esc(r.phone.replace(/[^\d+]/g,''))}">Call</a>`:''}</div><div class="acts"><button class="btn" id="pb">Build proposal + email</button></div><div id="po"></div><div><label for="os">Outreach status</label><div class="row"><select id="os">${Object.entries(LB).map(([k,v])=>`<option value="${k}"${OUT[key(r)]?.status===k?' selected':''}>${v}</option>`).join('')}</select><button class="ghost" id="osb">Save</button></div><div class="why" id="oh">${OUT[key(r)]?`Last: ${LB[OUT[key(r)].status]} · ${OUT[key(r)].updated.slice(0,16).replace('T',' ')}`:'Not contacted yet'}</div></div><div class="why">Nothing is sent from here. WhatsApp opens with the text ready; you press send. No email is collected by the scrape.</div>`;
  const wl=$('wa'),pt=$('pt');if(wl){const u=()=>wl.href=`https://wa.me/${wa}?text=${encodeURIComponent(pt.value)}`;u();pt.oninput=u}
  $('cp').onclick=async()=>{try{await navigator.clipboard.writeText(pt.value);$('cp').textContent='Copied'}catch{pt.select();$('cp').textContent='Select + copy'}setTimeout(()=>$('cp').textContent='Copy message',1500)};
  $('pb').onclick=()=>prop(rows.indexOf(r));
+ $('osb').onclick=()=>setO(r,$('os').value);
  $('dr').classList.add('open');$('dr').setAttribute('aria-hidden','false');$('dx').focus()}
 async function prop(i){const b=$('pb');b.disabled=true;b.textContent='Building (about 30s)…';
  try{const r=await fetch(API+'/proposal',{method:'POST',body:JSON.stringify({job:jobId,idx:i})}),o=await r.json();if(!r.ok)throw new Error(o.error);
@@ -158,15 +163,18 @@ async function prop(i){const b=$('pb');b.disabled=true;b.textContent='Building (
   $('po').innerHTML=`<dl><dt>Checks</dt><dd>${v.checks.map(k=>`${k.ok===null?'?':k.ok?'✓':'✗'} ${esc(k.k)}`).join('<br>')||'nothing to check (no site found)'}</dd><dt>Confidence</dt><dd>${Math.round(v.confidence*100)}%</dd><dt>Company</dt><dd>${esc(c.status)}${c.legalName?' · '+esc(c.legalName):''}${c.note?' · '+esc(c.note):''}</dd></dl>
   <div class="acts"><a class="ghost" target="_blank" rel="noopener" href="${API}${o.url}">Open proposal</a><a class="ghost" href="${API}${o.url}?dl=1">Download</a></div>
   ${e.allowed?`<label for="es">Subject</label><input id="es" value="${esc(e.subject)}"><label for="eb">Email (edit before sending)</label><textarea id="eb">${esc(e.body)}</textarea><div class="acts"><button class="btn" id="ec">Copy email</button></div>`:`<div class="why">${esc(e.reason)}</div>`}`;
-  const ec=$('ec');if(ec)ec.onclick=async()=>{try{await navigator.clipboard.writeText($('es').value+'\n\n'+$('eb').value);ec.textContent='Copied'}catch{$('eb').select()}};
+  const ec=$('ec');if(ec)ec.onclick=async()=>{try{await navigator.clipboard.writeText($('es').value+'\n\n'+$('eb').value);ec.textContent='Copied';if(!OUT[key(rows[i])])setO(rows[i],'drafted')}catch{$('eb').select()}};
   $('po').scrollIntoView({block:'nearest',behavior:'smooth'});b.textContent='Rebuild proposal'}catch(x){$('po').innerHTML=`<div class="why">${esc(x.message)}</div>`;b.textContent='Build proposal + email'}b.disabled=false}
+async function setO(r,status){try{const o=await(await fetch(API+'/outreach',{method:'POST',body:JSON.stringify({key:key(r),name:r.name,status})})).json();OUT[key(r)]=o;$('oh').textContent='Saved: '+LB[status];draw()}catch{$('oh').textContent='Save failed'}}
 function closeD(){$('dr').classList.remove('open');$('dr').setAttribute('aria-hidden','true');lastF&&lastF.focus()}
+$('hd').onclick=()=>{hideDone^=1;$('hd').setAttribute('aria-pressed',!!hideDone);draw()};
 $('dx').onclick=closeD;document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('dr').classList.contains('open'))closeD()});
 $('go').onclick=async()=>{
  $('msg').textContent='';$('go').disabled=true;$('go').classList.add('busy');$('go').textContent='Searching…';ctx={niche:$('niche').value,loc:$('loc').value};
  const r=await fetch(API+'/run',{method:'POST',body:JSON.stringify({niche:$('niche').value,location:$('loc').value,max:+$('max').value,skipClosed:$('skip').checked,confirm:$('ok').checked,free:$('free').checked})});
  const j=await r.json();if(!r.ok){$('msg').textContent=j.error;idle();return}
- jobId=j.id;$('prog').style.display='block';if(innerWidth<=820)$('prog').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'start'});$('csv').style.display='none';poll()};
+ jobId=j.id;$('prog').style.display='block';if(innerWidth<=820)$('prog').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'start'});$('csv').style.display='none';loadO();poll()};
+loadO();
 const LBL={queued:'Starting',scraping:'Finding businesses',grading:'Opening each website at 375px',done:'Done'};
 const idle=()=>{const b=$('go');b.classList.remove('busy');b.textContent='Run search';b.disabled=$('free').checked?false:!$('ok').checked};
 async function poll(){
