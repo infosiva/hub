@@ -112,7 +112,7 @@ tbody tr[tabindex]:focus-visible{outline:2px solid var(--b);outline-offset:-2px}
     <button class="chip unknown" data-f="unknown" aria-pressed="true"><span class="dot"></span>Unknown <b id="n-unknown">0</b></button>
     <button class="chip ok" data-f="ok" aria-pressed="false"><span class="dot"></span>OK <b id="n-ok">0</b></button>
    </div>
-   <button class="chip" id="hd" aria-pressed="true">Hide contacted</button><a class="ghost" id="csv" href="#" style="display:none">Download CSV</a>
+   <button class="chip" id="hd" aria-pressed="true">Hide contacted</button><button class="chip" id="sg">Mail settings</button><a class="ghost" id="csv" href="#" style="display:none">Download CSV</a>
   </div>
   <div id="prog" style="display:none"><div class="bar"><i id="fill"></i></div><div class="stage" id="stage" aria-live="polite"></div></div>
   <div class="table" id="tw"><div class="empty"><div class="demo" aria-hidden="true"><i></i><i></i><i></i></div>Set a business type and location, pick free mode or approve the spend, and run. Each site is opened at 375px and graded weak, none or ok.</div></div>
@@ -165,11 +165,16 @@ async function prop(i){const b=$('pb');b.disabled=true;b.textContent='Building (
   const e=o.email,v=o.validation,c=o.company;
   $('po').innerHTML=`<dl><dt>Checks</dt><dd>${v.checks.map(k=>`${k.ok===null?'?':k.ok?'✓':'✗'} ${esc(k.k)}`).join('<br>')||'nothing to check (no site found)'}</dd><dt>Confidence</dt><dd>${Math.round(v.confidence*100)}%</dd><dt>Company</dt><dd>${esc(c.status)}${c.legalName?' · '+esc(c.legalName):''}${c.note?' · '+esc(c.note):''}</dd></dl>
   <div class="acts"><a class="ghost" target="_blank" rel="noopener" href="${API}${o.url}">Open proposal</a><a class="ghost" href="${API}${o.url}?dl=1">Download</a></div>
-  ${e.allowed?`<label for="es">Subject</label><input id="es" value="${esc(e.subject)}"><label for="eb">Email (edit before sending)</label><textarea id="eb">${esc(e.body)}</textarea><div class="acts"><button class="btn" id="ec">Copy email</button></div>`:`<div class="why">${esc(e.reason)}</div>`}`;
+  ${e.allowed?`<label for="et">To (found on their site)</label><input id="et" type="email" value="${esc((o.facts&&o.facts.emails||[])[0]||'')}"><label for="es">Subject</label><input id="es" value="${esc(e.subject)}"><label for="eb">Email (edit before sending)</label><textarea id="eb">${esc(e.body)}</textarea><div class="acts"><button class="btn" id="ec">Copy email</button><button class="ghost" id="et2">Send test to me</button><button class="btn" id="esd">Send to lead</button></div><div class="why" id="em"></div>`:`<div class="why">${esc(e.reason)}</div>`}`;
   const ec=$('ec');if(ec)ec.onclick=async()=>{try{await navigator.clipboard.writeText($('es').value+'\n\n'+$('eb').value);ec.textContent='Copied';if(!OUT[key(rows[i])])setO(rows[i],'drafted')}catch{$('eb').select()}};
+  const snd=async test=>{const to=$('et').value.trim(),m=$('em');if(!test&&(!to||!confirm('Send this email to '+to+' now? This cannot be undone.')))return;m.textContent='Sending…';
+   try{const r2=await fetch(API+'/send',{method:'POST',body:JSON.stringify({test,confirm:!test,to,subject:$('es').value,text:$('eb').value})}),o2=await r2.json();if(!r2.ok)throw new Error(o2.error);m.textContent=(test?'Test sent to your inbox (reply-to address)':'Sent to '+to);if(!test)setO(rows[i],'sent')}catch(x){m.textContent='Failed: '+x.message}};
+  if($('esd')){$('et2').onclick=()=>snd(true);$('esd').onclick=()=>snd(false)}
   $('po').scrollIntoView({block:'nearest',behavior:'smooth'});b.textContent='Rebuild proposal'}catch(x){$('po').innerHTML=`<div class="why">${esc(x.message)}</div>`;b.textContent='Build proposal + email'}b.disabled=false}
 async function setO(r,status){try{const o=await(await fetch(API+'/outreach',{method:'POST',body:JSON.stringify({key:key(r),name:r.name,status})})).json();OUT[key(r)]=o;$('oh').textContent='Saved: '+LB[status];draw()}catch{$('oh').textContent='Save failed'}}
 function closeD(){$('dr').classList.remove('open');$('dr').setAttribute('aria-hidden','true');lastF&&lastF.focus()}
+$('sg').onclick=async()=>{const c=await(await fetch(API+'/settings')).json(),f=prompt('Send FROM (must be a Resend-verified domain)',c.from);if(f===null)return;const rt=prompt('Replies go to',c.replyTo);if(rt===null)return;const pb=prompt('Proposal link base URL',c.proposalBase);if(pb===null)return;
+ try{const r=await fetch(API+'/settings',{method:'POST',body:JSON.stringify({from:f,replyTo:rt,proposalBase:pb})}),o=await r.json();if(!r.ok)throw new Error(o.error);alert('Saved. From '+o.from+', replies to '+o.replyTo)}catch(x){alert('Failed: '+x.message)}};
 $('hd').onclick=()=>{hideDone^=1;$('hd').setAttribute('aria-pressed',!!hideDone);draw()};
 $('dx').onclick=closeD;document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('dr').classList.contains('open'))closeD()});
 $('go').onclick=async()=>{
