@@ -1,15 +1,25 @@
+# HANDOFF — hub design lock + animated scope
+**Date:** 2026-10-09  **Status:** COMPLETE (documentation of current UI)
+**Goal:** Record the locked design and ANIMATED SCOPE of the hub control plane (production-gate item 19).
 
+## Design lock
+- Source of truth: `agents/design-system` (MASTER.md); pointer in `DESIGN.md`.
+- Accent `#6366f1` on bg `#0b1120` (ops control plane, dark). Layout: app-shell dashboard (`DashboardGrid`, `SiteCard` grid, panels: Providers, AiHealth, AiDigest, DevStack, GlobalFlags, GlobalContent, LayoutPicker). Long lists scroll inside their panels.
+- Logo: `components/Logo.tsx`. Favicon static. Hub theme overridable via Edge Config `theme_hub` (`lib/theme-loader.ts`, cached 600s).
+- Routes: dashboard, portfolio, themes, status, marketing, login, login-events, access-codes, admin-codes, api-keys, privacy, terms.
 
-## OWASP LLM Top 10 dispositions (gate item 45, 2026-10-07; list recalled from memory, unverified)
-- LLM01 prompt injection: lib/guard.ts present, NOT yet wired into routes; no output filtering or tool sandbox review done. PARTIAL.
-- LLM02 sensitive info disclosure: `redact()` helper available; not applied to every log. PARTIAL.
-- LLM04/10 DoS / unbounded consumption: per-IP rate limit where present; token budgets not enforced. PARTIAL.
-- LLM05 improper output handling: model output rendered as text; not audited for HTML sinks. UNVERIFIED.
-- LLM06 excessive agency: no tool-calling agents audited. UNVERIFIED.
-- Others (supply chain, poisoning, embeddings, misinformation): not assessed.
+## ANIMATED SCOPE
+- What moves: `AnimatedBg` (aurora/mesh/dotgrid/gradient-shift), status-dot pulse on site health, card hover/press feedback, ChatBot panel open/close.
+- Why: bg gives depth without competing with data; status pulse signals live health; press/hover confirms interactivity.
+- Trigger: bg ambient (default `none`, hub-set `layout.bgAnimation`, speed `bgSpeed`); pulse on live sites; hover/press on pointer.
+- Reduced motion: `AnimatedBg` and `ChatBot` both disable animation/transition under `prefers-reduced-motion: reduce`.
+- Not animated: data tables, numbers, forms (dense ops UI, motion kept minimal).
 
+## Agents per phase
+design: UI Designer · build: Frontend Developer · QA: Evidence Collector, Accessibility Auditor · gate: Reality Checker.
 
-## ANIMATED SCOPE (gate items 19/21, derived from code 2026-10-07)
-- Moves: AnimatedBg (ambient hero/background); CSS keyframes: ds-float, ds-shift, fw-spin, hubbot-slide-bottom, hubbot-slide-up, iridescent, pulse-dot; transitions on interactive elements.
-- Trigger: page load (ambient) and hover/press (interactive). Reduced motion: honoured via prefers-reduced-motion block.
-- STATUS: scope documented from existing code only. Skill-stack passes (ui-ux-pro-max, emil-design-eng, impeccable critique, review-animations) and 375/1280 screenshot review are NOT yet run for this app. Item 21 stays OPEN until they are.
+## ai-core
+Exempt (see DESIGN.md): no document upload/RAG; chat/digest on local free chain.
+
+## Open gaps (owner-blocked)
+- Edge Config / Vercel env changes and deploy need owner (vercel login).

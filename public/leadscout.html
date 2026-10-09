@@ -80,7 +80,8 @@ textarea:focus-visible{outline:2px solid var(--b);outline-offset:2px}
 .acts .ghost,.acts .btn{height:44px;padding:0 14px;font-size:14px}
 tbody tr[tabindex]{cursor:pointer}tbody tr[tabindex]:hover td{background:color-mix(in srgb,var(--a) 7%,transparent)}
 tbody tr[tabindex]:focus-visible{outline:2px solid var(--b);outline-offset:-2px}
-@media (max-width:820px){.sub{display:none}.app{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);height:100dvh;padding:10px;gap:10px}aside:not(.drawer){padding:12px;gap:8px;max-height:46dvh}#go{position:sticky;bottom:0;flex-shrink:0;box-shadow:0 -8px 12px -6px rgba(255,255,255,.9)}main{padding:12px;min-height:0}.table{flex:1;min-height:0;max-height:none;overflow:auto}}
+.fields{display:contents}
+@media (max-width:820px){.sub{display:none}.app{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);height:100dvh;padding:10px;gap:10px}aside:not(.drawer){padding:12px;gap:8px;max-height:46dvh}aside:not(.drawer){overflow:hidden;display:flex;flex-direction:column}.fields{display:flex;flex-direction:column;gap:8px;overflow:auto;min-height:0;flex:1}#go{flex-shrink:0}main{padding:12px;min-height:0}.table{flex:1;min-height:0;max-height:none;overflow:auto}}
 @media (prefers-reduced-motion:reduce){*,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -88,7 +89,7 @@ tbody tr[tabindex]:focus-visible{outline:2px solid var(--b);outline-offset:-2px}
 <div class="aurora" aria-hidden="true"></div>
 <div class="app">
  <aside class="card">
-  <div><h1>Lead<span>Scout</span></h1><p class="sub">Find local businesses, then grade their websites on a phone.</p></div>
+  <div class="fields"><div><h1>Lead<span>Scout</span></h1><p class="sub">Find local businesses, then grade their websites on a phone.</p></div>
   <div><label for="niche">Business type</label><input id="niche" type="text" value="dentists"></div>
   <div><label for="loc">Location</label><input id="loc" type="text" value="Milton Keynes, UK"></div>
   <div><label for="me">Your name (for outreach)</label><input id="me" type="text" placeholder="e.g. Siva"></div>
@@ -99,6 +100,7 @@ tbody tr[tabindex]:focus-visible{outline:2px solid var(--b);outline-offset:-2px}
   <label class="chk" for="free"><input id="free" type="checkbox" checked>Free mode (OpenStreetMap: no ratings, patchy data)</label>
   <div class="cost"><span id="cl">Estimated Apify cost</span><b id="cost">$0.50</b></div>
   <label class="chk" for="ok"><input id="ok" type="checkbox">I approve this spend</label>
+  </div>
   <button class="btn" id="go" disabled>Run search</button>
   <div class="msg" id="msg" role="alert"></div>
  </aside>
